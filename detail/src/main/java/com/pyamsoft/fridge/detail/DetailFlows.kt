@@ -45,6 +45,8 @@ internal constructor(
     val bottomOffset: Int,
 ) : UiToolbar.State<DetailViewState.Sorts> {
 
+  val entryName = entry?.name().orEmpty()
+
   override val toolbarSearch = search.text
   override val toolbarSort = sort.asToolbarSort()
 

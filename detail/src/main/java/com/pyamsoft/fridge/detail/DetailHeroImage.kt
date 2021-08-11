@@ -21,12 +21,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.lifecycle.LifecycleOwner
 import com.pyamsoft.fridge.db.item.FridgeItem
-import com.pyamsoft.pydroid.ui.app.AppBarActivity
 import com.pyamsoft.fridge.ui.chart.Pie
 import com.pyamsoft.fridge.ui.view.UiHeroImage
 import com.pyamsoft.pydroid.arch.UiRender
 import com.pyamsoft.pydroid.loader.ImageLoader
 import com.pyamsoft.pydroid.loader.Loaded
+import com.pyamsoft.pydroid.ui.app.AppBarActivity
 import javax.inject.Inject
 
 class DetailHeroImage
@@ -62,9 +62,7 @@ internal constructor(
   override fun onAdditionalRender(state: UiRender<DetailViewState>) {
     state.mapChanged { it.allItems }.render(viewScope) { handleItems(it) }
     state.mapChanged { it.showing }.render(viewScope) { handleDescription(it) }
-    state.mapChanged { it.entry }.mapChanged { it?.name().orEmpty() }.render(viewScope) {
-      handleTitle(it)
-    }
+    state.mapChanged { it.entryName }.render(viewScope) { handleTitle(it) }
   }
 
   private fun handleDescription(showing: DetailViewState.Showing) {

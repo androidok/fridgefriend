@@ -24,6 +24,7 @@ import androidx.annotation.CheckResult
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import com.pyamsoft.fridge.FridgeComponent
 import com.pyamsoft.fridge.db.entry.FridgeEntry
 import com.pyamsoft.fridge.db.item.FridgeItem
@@ -32,12 +33,12 @@ import com.pyamsoft.fridge.detail.expand.date.DateSelectDialog
 import com.pyamsoft.fridge.detail.expand.move.ItemMoveDialog
 import com.pyamsoft.pydroid.arch.StateSaver
 import com.pyamsoft.pydroid.arch.UiController
+import com.pyamsoft.pydroid.arch.asFactory
 import com.pyamsoft.pydroid.arch.createComponent
-import com.pyamsoft.pydroid.arch.createSavedStateViewModelFactory
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R as R2
 import com.pyamsoft.pydroid.ui.app.makeFullWidth
-import com.pyamsoft.pydroid.ui.arch.fromViewModelFactory
 import com.pyamsoft.pydroid.ui.databinding.LayoutConstraintBinding
 import com.pyamsoft.pydroid.ui.util.layout
 import com.pyamsoft.pydroid.ui.util.show
@@ -68,8 +69,8 @@ internal class ExpandedItemDialog :
   private var stateSaver: StateSaver? = null
 
   @JvmField @Inject internal var factory: ExpandItemViewModel.Factory? = null
-  private val viewModel by fromViewModelFactory<ExpandItemViewModel> {
-    createSavedStateViewModelFactory(factory)
+  private val viewModel by viewModels<ExpandItemViewModel> {
+    factory.requireNotNull().asFactory(this)
   }
 
   override fun onCreateView(

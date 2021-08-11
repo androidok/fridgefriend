@@ -24,6 +24,7 @@ import androidx.annotation.CheckResult
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import com.pyamsoft.fridge.FridgeComponent
 import com.pyamsoft.fridge.core.FridgeViewModelFactory
 import com.pyamsoft.fridge.db.entry.FridgeEntry
@@ -35,11 +36,11 @@ import com.pyamsoft.pydroid.arch.StateSaver
 import com.pyamsoft.pydroid.arch.UiSavedStateWriter
 import com.pyamsoft.pydroid.arch.createComponent
 import com.pyamsoft.pydroid.arch.newUiController
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R
 import com.pyamsoft.pydroid.ui.app.makeFullscreen
 import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
-import com.pyamsoft.pydroid.ui.arch.fromViewModelFactory
 import com.pyamsoft.pydroid.ui.databinding.LayoutConstraintBinding
 import com.pyamsoft.pydroid.ui.util.layout
 import com.pyamsoft.pydroid.ui.widget.shadow.DropshadowView
@@ -48,8 +49,10 @@ import javax.inject.Inject
 internal class ItemMoveDialog : AppCompatDialogFragment() {
 
   @JvmField @Inject internal var factory: FridgeViewModelFactory? = null
-  private val viewModel by fromViewModelFactory<ItemMoveViewModel> { factory?.create(this) }
-  private val listViewModel by fromViewModelFactory<ItemMoveListViewModel> { factory?.create(this) }
+  private val viewModel by viewModels<ItemMoveViewModel> { factory.requireNotNull().create(this) }
+  private val listViewModel by viewModels<ItemMoveListViewModel> {
+    factory.requireNotNull().create(this)
+  }
 
   @JvmField @Inject internal var toolbar: MoveItemToolbar? = null
 

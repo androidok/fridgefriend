@@ -17,14 +17,12 @@
 package com.pyamsoft.fridge.main
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.ViewGroup
+import androidx.activity.viewModels
 import androidx.annotation.CheckResult
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -44,21 +42,19 @@ import com.pyamsoft.fridge.initOnAppStart
 import com.pyamsoft.fridge.search.SearchFragment
 import com.pyamsoft.fridge.setting.SettingsFragment
 import com.pyamsoft.fridge.ui.SnackbarContainer
-import com.pyamsoft.pydroid.ui.app.AppBarActivity
-import com.pyamsoft.pydroid.ui.app.AppBarActivityProvider
 import com.pyamsoft.pydroid.arch.StateSaver
 import com.pyamsoft.pydroid.arch.UiController
+import com.pyamsoft.pydroid.arch.asFactory
 import com.pyamsoft.pydroid.arch.createComponent
-import com.pyamsoft.pydroid.arch.createSavedStateViewModelFactory
-import com.pyamsoft.pydroid.notify.toNotifyId
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
-import com.pyamsoft.pydroid.ui.arch.fromViewModelFactory
+import com.pyamsoft.pydroid.notify.toNotifyId
+import com.pyamsoft.pydroid.ui.app.AppBarActivity
+import com.pyamsoft.pydroid.ui.app.AppBarActivityProvider
 import com.pyamsoft.pydroid.ui.changelog.ChangeLogActivity
 import com.pyamsoft.pydroid.ui.changelog.buildChangeLog
-import com.pyamsoft.pydroid.ui.databinding.LayoutConstraintBinding
 import com.pyamsoft.pydroid.ui.databinding.LayoutCoordinatorBinding
 import com.pyamsoft.pydroid.ui.util.commitNow
-import com.pyamsoft.pydroid.ui.util.layout
 import com.pyamsoft.pydroid.util.doOnResume
 import com.pyamsoft.pydroid.util.doOnStart
 import com.pyamsoft.pydroid.util.stableLayoutHideNavigation
@@ -130,9 +126,7 @@ internal class MainActivity :
   @JvmField @Inject internal var snackbar: MainSnackbar? = null
 
   @JvmField @Inject internal var factory: MainViewModel.Factory? = null
-  private val viewModel by fromViewModelFactory<MainViewModel> {
-    createSavedStateViewModelFactory(factory)
-  }
+  private val viewModel by viewModels<MainViewModel> { factory.requireNotNull().asFactory(this) }
 
   private val handler = Handler(Looper.getMainLooper())
 

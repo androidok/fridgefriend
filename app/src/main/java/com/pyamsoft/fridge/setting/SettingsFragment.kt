@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.CheckResult
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.pyamsoft.fridge.FridgeComponent
 import com.pyamsoft.fridge.core.FridgeViewModelFactory
 import com.pyamsoft.fridge.main.VersionChecker
@@ -28,6 +29,7 @@ import com.pyamsoft.pydroid.arch.StateSaver
 import com.pyamsoft.pydroid.arch.UiController
 import com.pyamsoft.pydroid.arch.UnitControllerEvent
 import com.pyamsoft.pydroid.arch.createComponent
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.arch.fromViewModelFactory
 import com.pyamsoft.pydroid.ui.settings.AppSettingsFragment
@@ -67,8 +69,8 @@ internal class SettingsFragment : AppSettingsFragment() {
     override val preferenceXmlResId: Int = R.xml.preferences
 
     @JvmField @Inject internal var factory: FridgeViewModelFactory? = null
-    private val viewModel by fromViewModelFactory<SettingsViewModel>(activity = true) {
-      factory?.create(requireActivity())
+    private val viewModel by activityViewModels<SettingsViewModel> {
+      factory.requireNotNull().create(requireActivity())
     }
 
     @JvmField @Inject internal var spacer: SettingsSpacer? = null

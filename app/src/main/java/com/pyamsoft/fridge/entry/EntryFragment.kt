@@ -25,6 +25,7 @@ import androidx.annotation.IdRes
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
 import com.pyamsoft.fridge.FridgeComponent
 import com.pyamsoft.fridge.core.FridgeViewModelFactory
@@ -37,11 +38,11 @@ import com.pyamsoft.fridge.ui.SnackbarContainer
 import com.pyamsoft.pydroid.arch.StateSaver
 import com.pyamsoft.pydroid.arch.UiController
 import com.pyamsoft.pydroid.arch.createComponent
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R
 import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.ui.app.requireToolbarActivity
-import com.pyamsoft.pydroid.ui.arch.fromViewModelFactory
 import com.pyamsoft.pydroid.ui.databinding.LayoutCoordinatorBinding
 import com.pyamsoft.pydroid.ui.util.commit
 import javax.inject.Inject
@@ -50,8 +51,8 @@ import timber.log.Timber
 internal class EntryFragment : Fragment(), SnackbarContainer, UiController<EntryControllerEvent> {
 
   @JvmField @Inject internal var factory: FridgeViewModelFactory? = null
-  private val viewModel by fromViewModelFactory<EntryViewModel>(activity = true) {
-    factory?.create(requireActivity())
+  private val viewModel by activityViewModels<EntryViewModel> {
+    factory.requireNotNull().create(requireActivity())
   }
 
   @JvmField @Inject internal var spacer: EntryAppBarSpacer? = null

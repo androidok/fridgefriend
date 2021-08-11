@@ -24,6 +24,7 @@ import androidx.annotation.CallSuper
 import androidx.annotation.CheckResult
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.pyamsoft.fridge.FridgeComponent
 import com.pyamsoft.fridge.core.FridgeViewModelFactory
@@ -31,9 +32,9 @@ import com.pyamsoft.fridge.db.entry.FridgeEntry
 import com.pyamsoft.pydroid.arch.StateSaver
 import com.pyamsoft.pydroid.arch.UiController
 import com.pyamsoft.pydroid.arch.createComponent
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R
-import com.pyamsoft.pydroid.ui.arch.fromViewModelFactory
 import com.pyamsoft.pydroid.ui.databinding.LayoutLinearVerticalBinding
 import com.pyamsoft.pydroid.ui.util.show
 import javax.inject.Inject
@@ -42,7 +43,9 @@ internal class CreateEntrySheet :
     BottomSheetDialogFragment(), UiController<CreateEntryControllerEvent> {
 
   @JvmField @Inject internal var factory: FridgeViewModelFactory? = null
-  private val viewModel by fromViewModelFactory<CreateEntryViewModel> { factory?.create(this) }
+  private val viewModel by viewModels<CreateEntryViewModel> {
+    factory.requireNotNull().create(this)
+  }
 
   @JvmField @Inject internal var name: CreateEntryName? = null
 

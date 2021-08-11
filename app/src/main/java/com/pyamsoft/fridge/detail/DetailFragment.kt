@@ -25,6 +25,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.pyamsoft.fridge.FridgeComponent
 import com.pyamsoft.fridge.core.FridgeViewModelFactory
 import com.pyamsoft.fridge.core.R
@@ -35,15 +36,15 @@ import com.pyamsoft.fridge.detail.expand.ExpandedItemDialog
 import com.pyamsoft.fridge.ui.SnackbarContainer
 import com.pyamsoft.pydroid.arch.StateSaver
 import com.pyamsoft.pydroid.arch.UiSavedStateWriter
+import com.pyamsoft.pydroid.arch.asFactory
 import com.pyamsoft.pydroid.arch.createComponent
-import com.pyamsoft.pydroid.arch.createSavedStateViewModelFactory
 import com.pyamsoft.pydroid.arch.emptyController
 import com.pyamsoft.pydroid.arch.newUiController
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R as R2
 import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.ui.app.requireToolbarActivity
-import com.pyamsoft.pydroid.ui.arch.fromViewModelFactory
 import com.pyamsoft.pydroid.ui.databinding.LayoutCoordinatorBinding
 import com.pyamsoft.pydroid.ui.util.show
 import javax.inject.Inject
@@ -67,23 +68,23 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
   @JvmField @Inject internal var switcher: DetailPresenceSwitcher? = null
 
   @JvmField @Inject internal var listFactory: DetailListViewModel.Factory? = null
-  private val listViewModel by fromViewModelFactory<DetailListViewModel> {
-    createSavedStateViewModelFactory(listFactory)
+  private val listViewModel by viewModels<DetailListViewModel> {
+    listFactory.requireNotNull().asFactory(this)
   }
 
   @JvmField @Inject internal var addFactory: DetailAddViewModel.Factory? = null
-  private val addViewModel by fromViewModelFactory<DetailAddViewModel> {
-    createSavedStateViewModelFactory(addFactory)
+  private val addViewModel by viewModels<DetailAddViewModel> {
+    addFactory.requireNotNull().asFactory(this)
   }
 
   @JvmField @Inject internal var switcherFactory: FridgeViewModelFactory? = null
-  private val switcherViewModel by fromViewModelFactory<DetailSwitcherViewModel> {
-    switcherFactory?.create(this)
+  private val switcherViewModel by viewModels<DetailSwitcherViewModel> {
+    switcherFactory.requireNotNull().create(this)
   }
 
   @JvmField @Inject internal var toolbarFactory: DetailToolbarViewModel.Factory? = null
-  private val toolbarViewModel by fromViewModelFactory<DetailToolbarViewModel> {
-    createSavedStateViewModelFactory(toolbarFactory)
+  private val toolbarViewModel by viewModels<DetailToolbarViewModel> {
+    toolbarFactory.requireNotNull().asFactory(this)
   }
 
   private var stateSaver: StateSaver? = null

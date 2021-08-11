@@ -23,6 +23,7 @@ import android.view.ViewGroup
 import androidx.annotation.CheckResult
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.pyamsoft.fridge.FridgeComponent
 import com.pyamsoft.fridge.core.FridgeViewModelFactory
 import com.pyamsoft.fridge.db.entry.FridgeEntry
@@ -34,14 +35,14 @@ import com.pyamsoft.fridge.detail.DetailViewEvent
 import com.pyamsoft.fridge.detail.expand.ExpandedItemDialog
 import com.pyamsoft.pydroid.arch.StateSaver
 import com.pyamsoft.pydroid.arch.UiSavedStateWriter
+import com.pyamsoft.pydroid.arch.asFactory
 import com.pyamsoft.pydroid.arch.createComponent
-import com.pyamsoft.pydroid.arch.createSavedStateViewModelFactory
 import com.pyamsoft.pydroid.arch.emptyController
 import com.pyamsoft.pydroid.arch.newUiController
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R as R2
 import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
-import com.pyamsoft.pydroid.ui.arch.fromViewModelFactory
 import com.pyamsoft.pydroid.ui.databinding.LayoutCoordinatorBinding
 import com.pyamsoft.pydroid.ui.util.show
 import javax.inject.Inject
@@ -63,23 +64,23 @@ internal class SearchFragment : Fragment() {
   @JvmField @Inject internal var switcher: DetailPresenceSwitcher? = null
 
   @JvmField @Inject internal var factory: FridgeViewModelFactory? = null
-  private val appBarViewModel by fromViewModelFactory<DetailSwitcherViewModel> {
-    factory?.create(this)
+  private val appBarViewModel by viewModels<DetailSwitcherViewModel> {
+    factory.requireNotNull().create(this)
   }
 
   @JvmField @Inject internal var listViewFactory: SearchListViewModel.Factory? = null
-  private val listViewModel by fromViewModelFactory<SearchListViewModel> {
-    createSavedStateViewModelFactory(listViewFactory)
+  private val listViewModel by viewModels<SearchListViewModel> {
+    listViewFactory.requireNotNull().asFactory(this)
   }
 
   @JvmField @Inject internal var filterViewFactory: SearchFilterViewModel.Factory? = null
-  private val filterViewModel by fromViewModelFactory<SearchFilterViewModel> {
-    createSavedStateViewModelFactory(filterViewFactory)
+  private val filterViewModel by viewModels<SearchFilterViewModel> {
+    filterViewFactory.requireNotNull().asFactory(this)
   }
 
   @JvmField @Inject internal var searchFactory: SearchViewModel.Factory? = null
-  private val viewModel by fromViewModelFactory<SearchViewModel> {
-    createSavedStateViewModelFactory(searchFactory)
+  private val viewModel by viewModels<SearchViewModel> {
+    searchFactory.requireNotNull().asFactory(this)
   }
 
   private var stateSaver: StateSaver? = null

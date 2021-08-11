@@ -17,13 +17,19 @@
 package com.pyamsoft.fridge.entry.create
 
 import com.pyamsoft.fridge.db.entry.FridgeEntry
+import com.pyamsoft.fridge.ui.view.UiEditTextDelegate
+import com.pyamsoft.fridge.ui.view.asEditData
 import com.pyamsoft.pydroid.arch.UiControllerEvent
 import com.pyamsoft.pydroid.arch.UiViewEvent
 import com.pyamsoft.pydroid.arch.UiViewState
 
 data class CreateEntryViewState
 internal constructor(val entry: FridgeEntry?, val working: Boolean, val throwable: Throwable?) :
-    UiViewState
+    UiViewState {
+
+  val entryName =
+      entry?.name()?.asEditData(force = entry.name().isBlank()) ?: UiEditTextDelegate.Data.EMPTY
+}
 
 sealed class CreateEntryViewEvent : UiViewEvent {
 

@@ -21,10 +21,10 @@ import androidx.core.view.isVisible
 import com.pyamsoft.fridge.detail.DetailViewEvent
 import com.pyamsoft.fridge.detail.DetailViewState
 import com.pyamsoft.fridge.search.databinding.SearchBarBinding
-import com.pyamsoft.pydroid.ui.app.AppBarActivity
 import com.pyamsoft.fridge.ui.view.UiEditTextDelegate
 import com.pyamsoft.pydroid.arch.UiRender
 import com.pyamsoft.pydroid.arch.UiView
+import com.pyamsoft.pydroid.ui.app.AppBarActivity
 import javax.inject.Inject
 
 class SearchBarView
@@ -67,7 +67,7 @@ internal constructor(
     state.mapChanged { it.search }.render(viewScope) { handleSearch(it) }
   }
 
-  private fun handleSearch(search: String) {
-    requireNotNull(delegate).handleTextChanged(search)
+  private fun handleSearch(data: UiEditTextDelegate.Data) {
+    requireNotNull(delegate).handleTextChanged(data)
   }
 }

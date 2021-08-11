@@ -18,6 +18,8 @@ package com.pyamsoft.fridge.detail.expand
 
 import com.pyamsoft.fridge.db.category.FridgeCategory
 import com.pyamsoft.fridge.db.item.FridgeItem
+import com.pyamsoft.fridge.ui.view.UiEditTextDelegate
+import com.pyamsoft.fridge.ui.view.asEditData
 import com.pyamsoft.pydroid.arch.UiControllerEvent
 import com.pyamsoft.pydroid.arch.UiViewEvent
 import com.pyamsoft.pydroid.arch.UiViewState
@@ -30,6 +32,17 @@ internal constructor(
     val similarItems: Collection<SimilarItem>,
     val categories: List<FridgeCategory>,
 ) : UiViewState {
+
+  val itemName = item?.name()?.asEditData() ?: UiEditTextDelegate.Data.EMPTY
+
+  val itemCount =
+      item?.count().let { count ->
+        if (count == null) {
+          UiEditTextDelegate.Data.EMPTY
+        } else {
+          "$count".asEditData()
+        }
+      }
 
   data class SimilarItem internal constructor(val item: FridgeItem?, val display: String)
 }

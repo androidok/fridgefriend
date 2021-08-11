@@ -18,7 +18,6 @@ package com.pyamsoft.fridge.detail.expand
 
 import android.text.InputType
 import android.view.ViewGroup
-import androidx.annotation.CheckResult
 import com.pyamsoft.fridge.db.item.FridgeItem
 import com.pyamsoft.fridge.db.item.isArchived
 import com.pyamsoft.fridge.detail.databinding.ExpandCountBinding
@@ -39,37 +38,26 @@ internal constructor(
 
   override val layoutRoot by boundView { expandItemCount }
 
-  private var delegate: UiEditTextDelegate? = null
+  private val delegate by lazy(LazyThreadSafetyMode.NONE) {
+    UiEditTextDelegate.create(binding.expandItemCountEditable) { newText ->
+      publish(ExpandedViewEvent.ItemEvent.CommitCount(newText.toIntOrNull() ?: 0))
+      return@create true
+    }
+  }
 
   init {
-    doOnInflate {
-      delegate =
-          UiEditTextDelegate.create(binding.expandItemCountEditable) { newText ->
-            publish(ExpandedViewEvent.ItemEvent.CommitCount(newText.toIntOrNull() ?: 0))
-            return@create true
-          }
-              .apply { handleCreate() }
-    }
+    doOnInflate { delegate.handleCreate() }
 
-    doOnTeardown {
-      delegate?.handleTeardown()
-      delegate = null
-    }
+    doOnTeardown { delegate.handleTeardown() }
   }
 
   override fun onRender(state: UiRender<ExpandedViewState>) {
     state.mapChanged { it.item }.render(viewScope) { handleEditable(it) }
-    state.mapChanged { it.item }.render(viewScope) { handleCount(it) }
+    state.mapChanged { it.itemCount }.render(viewScope) { handleCount(it) }
   }
 
-  @CheckResult
-  private fun getCountAsText(item: FridgeItem): String {
-    val count = item.count()
-    return if (count > 0) "$count" else ""
-  }
-
-  private fun handleCount(item: FridgeItem?) {
-    item?.let { requireNotNull(delegate).handleTextChanged(getCountAsText(it)) }
+  private fun handleCount(data: UiEditTextDelegate.Data) {
+    delegate.handleTextChanged(data)
   }
 
   private fun handleEditable(item: FridgeItem?) {

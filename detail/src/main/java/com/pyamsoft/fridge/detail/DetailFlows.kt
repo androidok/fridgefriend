@@ -19,6 +19,7 @@ package com.pyamsoft.fridge.detail
 import androidx.annotation.CheckResult
 import com.pyamsoft.fridge.db.entry.FridgeEntry
 import com.pyamsoft.fridge.db.item.FridgeItem
+import com.pyamsoft.fridge.ui.view.UiEditTextDelegate
 import com.pyamsoft.fridge.ui.view.UiToolbar
 import com.pyamsoft.pydroid.arch.UiControllerEvent
 import com.pyamsoft.pydroid.arch.UiViewEvent
@@ -30,7 +31,7 @@ internal constructor(
     // All the list items before filtering
     val allItems: List<FridgeItem>,
     val isLoading: Boolean,
-    val search: String,
+    val search: UiEditTextDelegate.Data,
     val entry: FridgeEntry?,
     val sort: Sorts,
     val showing: Showing,
@@ -44,7 +45,7 @@ internal constructor(
     val bottomOffset: Int,
 ) : UiToolbar.State<DetailViewState.Sorts> {
 
-  override val toolbarSearch = search
+  override val toolbarSearch = search.text
   override val toolbarSort = sort.asToolbarSort()
 
   data class Undoable internal constructor(val item: FridgeItem, val canQuickAdd: Boolean)

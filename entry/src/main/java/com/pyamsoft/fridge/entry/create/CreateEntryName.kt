@@ -38,22 +38,17 @@ internal constructor(
 
   override val layoutRoot by boundView { createEntryNameRoot }
 
-  private var delegate: UiEditTextDelegate? = null
+  private val delegate by lazy(LazyThreadSafetyMode.NONE) {
+    UiEditTextDelegate.create(binding.createEntryNameValue) { newText ->
+      publish(CreateEntryViewEvent.NameChanged(newText))
+      return@create true
+    }
+  }
 
   init {
-    doOnInflate {
-      delegate =
-          UiEditTextDelegate.create(binding.createEntryNameValue) { newText ->
-            publish(CreateEntryViewEvent.NameChanged(newText))
-            return@create true
-          }
-              .apply { handleCreate() }
-    }
+    doOnInflate { delegate.handleCreate() }
 
-    doOnTeardown {
-      delegate?.handleTeardown()
-      delegate = null
-    }
+    doOnTeardown { delegate.handleTeardown() }
 
     doOnInflate {
       binding.createEntryNameValue.apply {
@@ -80,12 +75,12 @@ internal constructor(
     doOnTeardown { binding.createEntryNameValue.setOnEditorActionListener(null) }
   }
 
-  private fun handleName(name: String?) {
-    requireNotNull(delegate).handleTextChanged(name.orEmpty())
+  private fun handleName(data: UiEditTextDelegate.Data) {
+    delegate.handleTextChanged(data)
   }
 
   override fun onRender(state: UiRender<CreateEntryViewState>) {
-    state.mapChanged { it.entry }.mapChanged { it?.name() }.render(viewScope) { handleName(it) }
+    state.mapChanged { it.entryName }.render(viewScope) { handleName(it) }
   }
 
   companion object {

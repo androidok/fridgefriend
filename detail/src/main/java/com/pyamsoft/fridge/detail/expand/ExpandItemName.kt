@@ -24,6 +24,7 @@ import com.pyamsoft.fridge.detail.databinding.ExpandNameBinding
 import com.pyamsoft.fridge.ui.isEditable
 import com.pyamsoft.fridge.ui.setEditable
 import com.pyamsoft.fridge.ui.view.UiEditTextDelegate
+import com.pyamsoft.fridge.ui.view.asEditData
 import com.pyamsoft.pydroid.arch.BaseUiView
 import com.pyamsoft.pydroid.arch.UiRender
 import javax.inject.Inject
@@ -41,7 +42,12 @@ internal constructor(
 
   private val popupWindow = SimilarlyNamedListWindow(parent.context)
 
-  private var delegate: UiEditTextDelegate? = null
+  private val delegate by lazy(LazyThreadSafetyMode.NONE) {
+    UiEditTextDelegate.create(binding.expandItemName) { newText ->
+      publish(ExpandedViewEvent.ItemEvent.CommitName(newText))
+      return@create true
+    }
+  }
 
   init {
     doOnInflate {
@@ -66,35 +72,26 @@ internal constructor(
 
     doOnTeardown { popupWindow.teardown() }
 
-    doOnInflate {
-      delegate =
-          UiEditTextDelegate.create(binding.expandItemName) { newText ->
-            publish(ExpandedViewEvent.ItemEvent.CommitName(newText))
-            return@create true
-          }
-              .apply { handleCreate() }
-    }
+    doOnInflate { delegate.handleCreate() }
 
-    doOnTeardown {
-      delegate?.handleTeardown()
-      delegate = null
-    }
+    doOnTeardown { delegate.handleTeardown() }
   }
 
   private fun selectSimilar(item: FridgeItem) {
     Timber.d("Similar popup FridgeItem selected: $item")
-    requireNotNull(delegate).forceSetText(item.name())
+    // TODO move into VM
+    delegate.handleTextChanged(item.name().asEditData(true))
     publish(ExpandedViewEvent.ItemEvent.SelectSimilar(item))
   }
 
   override fun onRender(state: UiRender<ExpandedViewState>) {
-    state.mapChanged { it.item }.render(viewScope) { handleName(it) }
+    state.mapChanged { it.itemName }.render(viewScope) { handleName(it) }
     state.mapChanged { it.item }.render(viewScope) { handleEditable(it) }
     state.mapChanged { it.similarItems }.render(viewScope) { handlePopupWindow(it) }
   }
 
-  private fun handleName(item: FridgeItem?) {
-    item?.let { requireNotNull(delegate).handleTextChanged(it.name()) }
+  private fun handleName(data: UiEditTextDelegate.Data) {
+    delegate.handleTextChanged(data)
   }
 
   private fun handleEditable(item: FridgeItem?) {

@@ -74,30 +74,25 @@ private constructor(
     onTextChanged = null
   }
 
-  private fun applyText(text: String, stopIfInitialRenderPerformed: Boolean) {
-    if (text.isNotBlank()) {
-      if (stopIfInitialRenderPerformed) {
-        // Don't keep setting text here as it is too slow
-        if (initialRenderPerformed) {
-          return
-        }
-      }
+  private fun applyText(text: String, force: Boolean) {
+    // Don't keep setting text here as it is too slow
+    val skipRender = if (force) false else initialRenderPerformed
+    if (skipRender) {
+      return
+    }
+    initialRenderPerformed = true
 
-      initialRenderPerformed = true
-      ignoreWatcher { it.setTextKeepState(text) }
-    } else {
-      // But if the state has been blanked out, clear out the editable
-      initialRenderPerformed = true
-      ignoreWatcher { it.text.clear() }
+    ignoreWatcher { edit ->
+      if (text.isNotBlank()) {
+        edit.setTextKeepState(text)
+      } else {
+        edit.text.clear()
+      }
     }
   }
 
-  fun forceSetText(text: String) {
-    applyText(text, stopIfInitialRenderPerformed = false)
-  }
-
-  fun handleTextChanged(text: String) {
-    applyText(text, stopIfInitialRenderPerformed = true)
+  fun handleTextChanged(data: Data) {
+    applyText(data.text, data.force)
   }
 
   companion object {
@@ -164,4 +159,22 @@ private constructor(
       }
     }
   }
+
+  data class Data
+  internal constructor(
+      val text: String,
+      val force: Boolean,
+  ) {
+
+    companion object {
+
+      @JvmField val EMPTY = Data(text = "", force = true)
+    }
+  }
+}
+
+@CheckResult
+fun String.asEditData(force: Boolean = false): UiEditTextDelegate.Data {
+  return if (this.isBlank()) UiEditTextDelegate.Data.EMPTY
+  else UiEditTextDelegate.Data(text = this, force = force)
 }

@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.pyamsoft.fridge.detail.databinding.ExpandCategoryItemHolderBinding
 import com.pyamsoft.pydroid.arch.ViewBinder
 import com.pyamsoft.pydroid.arch.createViewBinder
-import com.pyamsoft.pydroid.ui.theme.ThemeProvider
 import com.pyamsoft.pydroid.ui.util.layout
 import com.pyamsoft.pydroid.util.doOnDestroy
 import javax.inject.Inject
@@ -31,7 +30,6 @@ class ExpandedCategoryViewHolder
 internal constructor(
     binding: ExpandCategoryItemHolderBinding,
     owner: LifecycleOwner,
-    themeProvider: ThemeProvider,
     factory: ExpandCategoryComponent.Factory,
     callback: ExpandItemCategoryListAdapter.Callback
 ) : RecyclerView.ViewHolder(binding.root), ViewBinder<ExpandedCategoryViewState> {
@@ -47,7 +45,7 @@ internal constructor(
   @JvmField @Inject internal var selectOverlay: ExpandCategorySelectOverlay? = null
 
   init {
-    factory.create(binding.expandCategoryItem, themeProvider).inject(this)
+    factory.create(binding.expandCategoryItem).inject(this)
 
     val thumbnailView = requireNotNull(thumbnail)
     val scrimView = requireNotNull(scrim)

@@ -58,7 +58,7 @@ internal constructor(
       if (!loading) {
         if (state.displayedItems.isEmpty()) {
           val isNeed = state.listItemPresence == NEED
-          loadText(isNeed, state.search.isNotBlank())
+          loadText(isNeed, state.search.text.isNotBlank())
         }
       }
     }

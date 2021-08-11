@@ -16,17 +16,10 @@
 
 package com.pyamsoft.fridge.detail.expand
 
-import android.app.Activity
 import android.view.ViewGroup
 import androidx.annotation.CheckResult
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
-import androidx.savedstate.SavedStateRegistryOwner
 import com.pyamsoft.fridge.core.ViewModelFactoryModule
-import com.pyamsoft.fridge.db.entry.FridgeEntry
-import com.pyamsoft.fridge.db.item.FridgeItem
-import com.pyamsoft.fridge.db.item.FridgeItem.Presence
-import com.pyamsoft.fridge.ui.ThemeProviderModule
 import com.pyamsoft.pydroid.arch.UiSavedStateViewModelProvider
 import dagger.Binds
 import dagger.BindsInstance
@@ -40,7 +33,7 @@ import dagger.multibindings.IntoMap
         [
             ExpandComponent.ComponentModule::class,
             ViewModelFactoryModule::class,
-            ThemeProviderModule::class])
+        ])
 internal interface ExpandComponent {
 
   fun inject(dialog: ExpandedItemDialog)
@@ -50,13 +43,7 @@ internal interface ExpandComponent {
 
     @CheckResult
     fun create(
-        @BindsInstance savedStateRegistryOwner: SavedStateRegistryOwner,
-        @BindsInstance activity: Activity,
         @BindsInstance parent: ViewGroup,
-        @BindsInstance owner: LifecycleOwner,
-        @BindsInstance itemId: FridgeItem.Id,
-        @BindsInstance itemEntryId: FridgeEntry.Id,
-        @BindsInstance defaultPresence: Presence
     ): ExpandComponent
   }
 

@@ -24,13 +24,13 @@ import androidx.annotation.CheckResult
 import androidx.fragment.app.Fragment
 import com.pyamsoft.fridge.FridgeComponent
 import com.pyamsoft.fridge.core.FridgeViewModelFactory
-import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.arch.StateSaver
 import com.pyamsoft.pydroid.arch.UiController
 import com.pyamsoft.pydroid.arch.UnitControllerEvent
 import com.pyamsoft.pydroid.arch.createComponent
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R as R2
+import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.ui.arch.fromViewModelFactory
 import com.pyamsoft.pydroid.ui.databinding.LayoutCoordinatorBinding
 import javax.inject.Inject
@@ -68,8 +68,10 @@ internal class CategoryFragment : Fragment(), UiController<UnitControllerEvent> 
         .create(
             requireAppBarActivity(),
             requireActivity(),
-            binding.layoutCoordinator,
-            viewLifecycleOwner)
+            viewLifecycleOwner,
+        )
+        .plusCategoryComponent()
+        .create(binding.layoutCoordinator)
         .inject(this)
 
     stateSaver =

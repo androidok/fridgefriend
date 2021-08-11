@@ -16,20 +16,11 @@
 
 package com.pyamsoft.fridge.detail
 
-import android.app.Activity
 import android.view.ViewGroup
 import androidx.annotation.CheckResult
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
-import androidx.savedstate.SavedStateRegistryOwner
 import com.pyamsoft.fridge.core.FragmentScope
 import com.pyamsoft.fridge.core.ViewModelFactoryModule
-import com.pyamsoft.fridge.db.entry.FridgeEntry
-import com.pyamsoft.fridge.db.item.FridgeItem.Presence
-import com.pyamsoft.fridge.tooltip.balloon.TooltipModule
-import com.pyamsoft.fridge.ui.ThemeProviderModule
-import com.pyamsoft.pydroid.ui.app.AppBarActivity
-import com.pyamsoft.pydroid.ui.app.ToolbarActivity
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Module
@@ -43,8 +34,7 @@ import dagger.multibindings.IntoMap
         [
             DetailComponent.ComponentModule::class,
             ViewModelFactoryModule::class,
-            TooltipModule::class,
-            ThemeProviderModule::class])
+        ])
 internal interface DetailComponent {
 
   fun inject(fragment: DetailFragment)
@@ -54,14 +44,7 @@ internal interface DetailComponent {
 
     @CheckResult
     fun create(
-        @BindsInstance savedStateRegistryOwner: SavedStateRegistryOwner,
-        @BindsInstance toolbarActivity: ToolbarActivity,
-        @BindsInstance appBarActivity: AppBarActivity,
-        @BindsInstance activity: Activity,
         @BindsInstance parent: ViewGroup,
-        @BindsInstance owner: LifecycleOwner,
-        @BindsInstance entryId: FridgeEntry.Id,
-        @BindsInstance filterPresence: Presence,
     ): DetailComponent
   }
 

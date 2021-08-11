@@ -24,24 +24,20 @@ import com.pyamsoft.fridge.FridgeComponent.FridgeProvider
 import com.pyamsoft.fridge.butler.ButlerModule
 import com.pyamsoft.fridge.butler.injector.ButlerComponent
 import com.pyamsoft.fridge.butler.workmanager.WorkManagerModule
-import com.pyamsoft.fridge.category.CategoryComponent
-import com.pyamsoft.fridge.category.item.CategoryItemComponent
+import com.pyamsoft.fridge.category.BaseCategoryComponent
 import com.pyamsoft.fridge.core.R
 import com.pyamsoft.fridge.db.DbModule
 import com.pyamsoft.fridge.db.room.RoomModule
-import com.pyamsoft.fridge.detail.DetailComponent
-import com.pyamsoft.fridge.detail.expand.ExpandComponent
-import com.pyamsoft.fridge.detail.expand.categories.ExpandCategoryComponent
+import com.pyamsoft.fridge.detail.BaseDetailComponent
+import com.pyamsoft.fridge.detail.expand.BaseExpandComponent
 import com.pyamsoft.fridge.detail.expand.date.DateSelectComponent
 import com.pyamsoft.fridge.detail.expand.date.DateSelectPayload
-import com.pyamsoft.fridge.detail.expand.move.ItemMoveComponent
-import com.pyamsoft.fridge.detail.item.DetailItemComponent
-import com.pyamsoft.fridge.entry.EntryComponent
+import com.pyamsoft.fridge.detail.expand.move.BaseItemMoveComponent
+import com.pyamsoft.fridge.entry.BaseEntryComponent
 import com.pyamsoft.fridge.entry.create.CreateEntryComponent
-import com.pyamsoft.fridge.entry.item.EntryItemComponent
 import com.pyamsoft.fridge.main.MainComponent
 import com.pyamsoft.fridge.preference.PreferenceModule
-import com.pyamsoft.fridge.search.SearchComponent
+import com.pyamsoft.fridge.search.BaseSearchComponent
 import com.pyamsoft.fridge.setting.SettingsComponent
 import com.pyamsoft.fridge.ui.UiModule
 import com.pyamsoft.pydroid.bus.EventBus
@@ -67,26 +63,6 @@ import javax.inject.Singleton
             UiModule::class])
 internal interface FridgeComponent {
 
-  /** Not actually used, just here so graph can compile */
-  @CheckResult
-  @Suppress("FunctionName")
-  fun `$$daggerRequiredEntryItemComponent`(): EntryItemComponent.Factory
-
-  /** Not actually used, just here so graph can compile */
-  @CheckResult
-  @Suppress("FunctionName")
-  fun `$$daggerRequiredDetailItemComponent`(): DetailItemComponent.Factory
-
-  /** Not actually used, just here so graph can compile */
-  @CheckResult
-  @Suppress("FunctionName")
-  fun `$$daggerRequiredExpandCategoryComponent`(): ExpandCategoryComponent.Factory
-
-  /** Not actually used, just here so graph can compile */
-  @CheckResult
-  @Suppress("FunctionName")
-  fun `$$daggerRequiredCategoryItemComponent`(): CategoryItemComponent.Factory
-
   // ===============================================
   // HACKY INJECTORS
 
@@ -97,17 +73,17 @@ internal interface FridgeComponent {
 
   @CheckResult fun plusSettingsComponent(): SettingsComponent.Factory
 
-  @CheckResult fun plusCategoryComponent(): CategoryComponent.Factory
+  @CheckResult fun plusCategoryComponent(): BaseCategoryComponent.Factory
 
-  @CheckResult fun plusItemMoveComponent(): ItemMoveComponent.Factory
+  @CheckResult fun plusItemMoveComponent(): BaseItemMoveComponent.Factory
 
-  @CheckResult fun plusExpandComponent(): ExpandComponent.Factory
+  @CheckResult fun plusExpandComponent(): BaseExpandComponent.Factory
 
-  @CheckResult fun plusDetailComponent(): DetailComponent.Factory
+  @CheckResult fun plusDetailComponent(): BaseDetailComponent.Factory
 
-  @CheckResult fun plusSearchComponent(): SearchComponent.Factory
+  @CheckResult fun plusSearchComponent(): BaseSearchComponent.Factory
 
-  @CheckResult fun plusEntryComponent(): EntryComponent.Factory
+  @CheckResult fun plusEntryComponent(): BaseEntryComponent.Factory
 
   @CheckResult fun plusCreateEntryComponent(): CreateEntryComponent.Factory
 

@@ -16,17 +16,11 @@
 
 package com.pyamsoft.fridge.entry
 
-import android.app.Activity
 import android.view.ViewGroup
 import androidx.annotation.CheckResult
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import com.pyamsoft.fridge.core.FragmentScope
 import com.pyamsoft.fridge.core.ViewModelFactoryModule
-import com.pyamsoft.fridge.tooltip.balloon.TooltipModule
-import com.pyamsoft.fridge.ui.ThemeProviderModule
-import com.pyamsoft.pydroid.ui.app.AppBarActivity
-import com.pyamsoft.pydroid.ui.app.ToolbarActivity
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Module
@@ -40,8 +34,7 @@ import dagger.multibindings.IntoMap
         [
             EntryComponent.ComponentModule::class,
             ViewModelFactoryModule::class,
-            ThemeProviderModule::class,
-            TooltipModule::class])
+        ])
 internal interface EntryComponent {
 
   fun inject(fragment: EntryFragment)
@@ -51,10 +44,6 @@ internal interface EntryComponent {
 
     @CheckResult
     fun create(
-        @BindsInstance appBarActivity: AppBarActivity,
-        @BindsInstance toolbarActivity: ToolbarActivity,
-        @BindsInstance activity: Activity,
-        @BindsInstance owner: LifecycleOwner,
         @BindsInstance parent: ViewGroup,
     ): EntryComponent
   }

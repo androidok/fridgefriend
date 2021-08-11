@@ -33,8 +33,6 @@ internal constructor(
     binding: DetailListItemHolderBinding,
     editable: Boolean,
     owner: LifecycleOwner,
-    themeProvider: ThemeProvider,
-    tooltipCreator: TooltipCreator,
     factory: DetailItemComponent.Factory,
     callback: DetailListAdapter.Callback
 ) : RecyclerView.ViewHolder(binding.root), ViewBinder<DetailItemViewState> {
@@ -58,7 +56,7 @@ internal constructor(
   private val viewBinder: ViewBinder<DetailItemViewState>
 
   init {
-    factory.create(binding.detailListItem, editable, themeProvider, tooltipCreator).inject(this)
+    factory.create(binding.detailListItem, editable).inject(this)
 
     // Nest views
     val extra = requireNotNull(extraContainer)

@@ -27,20 +27,21 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.pyamsoft.fridge.FridgeComponent
 import com.pyamsoft.fridge.core.FridgeViewModelFactory
+import com.pyamsoft.fridge.core.R
 import com.pyamsoft.fridge.db.entry.FridgeEntry
 import com.pyamsoft.fridge.db.item.FridgeItem
 import com.pyamsoft.fridge.db.item.FridgeItem.Presence
 import com.pyamsoft.fridge.detail.expand.ExpandedItemDialog
-import com.pyamsoft.fridge.core.R
 import com.pyamsoft.fridge.ui.SnackbarContainer
-import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.arch.StateSaver
+import com.pyamsoft.pydroid.arch.UiSavedStateWriter
 import com.pyamsoft.pydroid.arch.createComponent
 import com.pyamsoft.pydroid.arch.createSavedStateViewModelFactory
 import com.pyamsoft.pydroid.arch.emptyController
 import com.pyamsoft.pydroid.arch.newUiController
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R as R2
+import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.ui.app.requireToolbarActivity
 import com.pyamsoft.pydroid.ui.arch.fromViewModelFactory
 import com.pyamsoft.pydroid.ui.databinding.LayoutCoordinatorBinding
@@ -115,10 +116,12 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
             requireToolbarActivity(),
             requireAppBarActivity(),
             requireActivity(),
-            binding.layoutCoordinator,
             viewLifecycleOwner,
             entryId,
-            presence)
+            presence,
+        )
+        .plusDetailComponent()
+        .create(binding.layoutCoordinator)
         .inject(this)
 
     val container = requireNotNull(container)
@@ -210,11 +213,23 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
         }
 
     stateSaver =
-        StateSaver { outState ->
-          listSaver.saveState(outState)
-          switcherSaver.saveState(outState)
-          toolbarSaver.saveState(outState)
-          addSaver.saveState(outState)
+        object : StateSaver {
+
+          private val savers =
+              arrayOf(
+                  listSaver,
+                  switcherSaver,
+                  toolbarSaver,
+                  addSaver,
+              )
+
+          override fun saveState(outState: Bundle) {
+            savers.forEach { it.saveState(outState) }
+          }
+
+          override fun saveState(outState: UiSavedStateWriter) {
+            savers.forEach { it.saveState(outState) }
+          }
         }
 
     container.layout {

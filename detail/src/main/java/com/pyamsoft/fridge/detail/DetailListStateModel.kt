@@ -29,6 +29,7 @@ import com.pyamsoft.fridge.db.item.isExpired
 import com.pyamsoft.fridge.db.item.isExpiringSoon
 import com.pyamsoft.fridge.detail.base.UpdateDelegate
 import com.pyamsoft.fridge.ui.BottomOffset
+import com.pyamsoft.fridge.ui.view.asEditData
 import com.pyamsoft.highlander.highlander
 import com.pyamsoft.pydroid.arch.UiStateModel
 import com.pyamsoft.pydroid.bus.EventConsumer
@@ -58,7 +59,7 @@ internal constructor(
         initialState =
             DetailViewState(
                 entry = null,
-                search = "",
+                search = "".asEditData(),
                 isLoading = false,
                 showing = DetailViewState.Showing.FRESH,
                 sort = DetailViewState.Sorts.CREATED,
@@ -355,7 +356,7 @@ internal constructor(
             DetailViewState.Showing.SPOILED -> it.isSpoiled()
           }
         }
-        .filter { it.matchesQuery(query, showAllItems) }
+        .filter { it.matchesQuery(query.text, showAllItems) }
         .toList()
   }
 
@@ -410,12 +411,12 @@ internal constructor(
   ) {
     scope.setState(
         stateChange = {
-          val cleanSearch = if (newSearch.isNotBlank()) newSearch.trim() else ""
+          val cleanSearch = if (newSearch.isNotBlank()) newSearch.trim().asEditData() else "".asEditData(true)
           copy(search = cleanSearch)
         },
         andThen = { newState ->
           handleRefreshList(this, false)
-          andThen(newState.search)
+          andThen(newState.search.text)
         })
   }
 

@@ -16,19 +16,11 @@
 
 package com.pyamsoft.fridge.search
 
-import android.app.Activity
 import android.view.ViewGroup
 import androidx.annotation.CheckResult
-import androidx.lifecycle.LifecycleOwner
-import androidx.savedstate.SavedStateRegistryOwner
 import com.pyamsoft.fridge.core.FragmentScope
 import com.pyamsoft.fridge.core.ViewModelFactoryModule
-import com.pyamsoft.fridge.db.entry.FridgeEntry
-import com.pyamsoft.fridge.db.item.FridgeItem.Presence
 import com.pyamsoft.fridge.detail.DetailComponent
-import com.pyamsoft.fridge.tooltip.balloon.TooltipModule
-import com.pyamsoft.fridge.ui.ThemeProviderModule
-import com.pyamsoft.pydroid.ui.app.AppBarActivity
 import dagger.BindsInstance
 import dagger.Subcomponent
 
@@ -38,8 +30,7 @@ import dagger.Subcomponent
         [
             DetailComponent.ComponentModule::class,
             ViewModelFactoryModule::class,
-            TooltipModule::class,
-            ThemeProviderModule::class])
+        ])
 internal interface SearchComponent {
 
   fun inject(fragment: SearchFragment)
@@ -49,13 +40,7 @@ internal interface SearchComponent {
 
     @CheckResult
     fun create(
-        @BindsInstance savedStateRegistryOwner: SavedStateRegistryOwner,
-        @BindsInstance appBarActivity: AppBarActivity,
-        @BindsInstance activity: Activity,
         @BindsInstance parent: ViewGroup,
-        @BindsInstance owner: LifecycleOwner,
-        @BindsInstance entryId: FridgeEntry.Id,
-        @BindsInstance filterPresence: Presence,
     ): SearchComponent
   }
 }

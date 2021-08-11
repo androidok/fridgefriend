@@ -16,42 +16,37 @@
 
 package com.pyamsoft.fridge.category
 
-import android.view.ViewGroup
+import android.app.Activity
 import androidx.annotation.CheckResult
-import androidx.lifecycle.ViewModel
-import com.pyamsoft.fridge.core.ViewModelFactoryModule
-import dagger.Binds
+import androidx.lifecycle.LifecycleOwner
+import com.pyamsoft.fridge.category.item.CategoryItemComponent
+import com.pyamsoft.fridge.ui.ThemeProviderModule
+import com.pyamsoft.pydroid.ui.app.AppBarActivity
 import dagger.BindsInstance
-import dagger.Module
 import dagger.Subcomponent
-import dagger.multibindings.ClassKey
-import dagger.multibindings.IntoMap
 
 @Subcomponent(
     modules =
         [
-            CategoryComponent.ComponentModule::class,
-            ViewModelFactoryModule::class,
+            ThemeProviderModule::class,
         ])
-internal interface CategoryComponent {
+internal interface BaseCategoryComponent {
 
-  fun inject(fragment: CategoryFragment)
+  /** Not actually used, just here so graph can compile */
+  @CheckResult
+  @Suppress("FunctionName")
+  fun `$$daggerRequiredCategoryItemComponent`(): CategoryItemComponent.Factory
+
+  @CheckResult fun plusCategoryComponent(): CategoryComponent.Factory
 
   @Subcomponent.Factory
   interface Factory {
 
     @CheckResult
     fun create(
-        @BindsInstance parent: ViewGroup,
-    ): CategoryComponent
-  }
-
-  @Module
-  abstract class ComponentModule {
-
-    @Binds
-    @IntoMap
-    @ClassKey(CategoryViewModel::class)
-    internal abstract fun bindViewModel(impl: CategoryViewModel): ViewModel
+        @BindsInstance appBarActivity: AppBarActivity,
+        @BindsInstance activity: Activity,
+        @BindsInstance owner: LifecycleOwner
+    ): BaseCategoryComponent
   }
 }

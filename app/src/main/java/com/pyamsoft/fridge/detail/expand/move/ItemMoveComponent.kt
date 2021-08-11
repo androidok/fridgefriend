@@ -16,18 +16,11 @@
 
 package com.pyamsoft.fridge.detail.expand.move
 
-import android.app.Activity
 import android.view.ViewGroup
 import androidx.annotation.CheckResult
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import com.pyamsoft.fridge.core.FragmentScope
 import com.pyamsoft.fridge.core.ViewModelFactoryModule
-import com.pyamsoft.fridge.db.entry.FridgeEntry
-import com.pyamsoft.fridge.db.item.FridgeItem
-import com.pyamsoft.fridge.tooltip.balloon.TooltipModule
-import com.pyamsoft.fridge.ui.ThemeProviderModule
-import com.pyamsoft.pydroid.ui.app.AppBarActivity
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Module
@@ -42,8 +35,7 @@ import dagger.multibindings.IntoMap
             ItemMoveComponent.ComponentModule::class,
             ViewModelFactoryModule::class,
             ItemMoveModule::class,
-            ThemeProviderModule::class,
-            TooltipModule::class])
+        ])
 internal interface ItemMoveComponent {
 
   fun inject(dialog: ItemMoveDialog)
@@ -51,15 +43,7 @@ internal interface ItemMoveComponent {
   @Subcomponent.Factory
   interface Factory {
 
-    @CheckResult
-    fun create(
-        @BindsInstance appBarActivity: AppBarActivity,
-        @BindsInstance activity: Activity,
-        @BindsInstance owner: LifecycleOwner,
-        @BindsInstance parent: ViewGroup,
-        @BindsInstance itemId: FridgeItem.Id,
-        @BindsInstance itemEntryId: FridgeEntry.Id,
-    ): ItemMoveComponent
+    @CheckResult fun create(@BindsInstance parent: ViewGroup): ItemMoveComponent
   }
 
   @Module

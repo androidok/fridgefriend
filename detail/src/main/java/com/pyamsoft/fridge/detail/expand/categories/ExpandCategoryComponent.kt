@@ -18,7 +18,6 @@ package com.pyamsoft.fridge.detail.expand.categories
 
 import android.view.ViewGroup
 import androidx.annotation.CheckResult
-import com.pyamsoft.pydroid.ui.theme.ThemeProvider
 import dagger.BindsInstance
 import dagger.Subcomponent
 
@@ -33,7 +32,6 @@ interface ExpandCategoryComponent {
     @CheckResult
     fun create(
         @BindsInstance parent: ViewGroup,
-        @BindsInstance themeProvider: ThemeProvider,
     ): ExpandCategoryComponent
   }
 }

@@ -34,7 +34,6 @@ import com.pyamsoft.fridge.detail.item.DetailItemComponent
 import com.pyamsoft.fridge.detail.item.DetailItemViewHolder
 import com.pyamsoft.fridge.detail.item.DetailItemViewState
 import com.pyamsoft.fridge.detail.item.DetailListAdapter
-import com.pyamsoft.fridge.tooltip.TooltipCreator
 import com.pyamsoft.fridge.ui.R as R4
 import com.pyamsoft.pydroid.arch.BaseUiView
 import com.pyamsoft.pydroid.arch.UiRender
@@ -58,7 +57,6 @@ internal constructor(
     owner: LifecycleOwner,
     private val imageLoader: ImageLoader,
     private val theming: ThemeProvider,
-    tooltipCreator: TooltipCreator,
     parent: ViewGroup,
     factory: DetailItemComponent.Factory,
 ) : BaseUiView<DetailViewState, DetailViewEvent.ListEvent, DetailListBinding>(parent) {
@@ -84,17 +82,15 @@ internal constructor(
     doOnInflate {
       binding.detailList.layoutManager =
           LinearLayoutManager(binding.detailList.context).apply {
-        isItemPrefetchEnabled = true
-        initialPrefetchItemCount = 3
-      }
+            isItemPrefetchEnabled = true
+            initialPrefetchItemCount = 3
+          }
     }
 
     doOnInflate {
       modelAdapter =
           DetailListAdapter(
               owner = owner,
-              themeProvider = theming,
-              tooltipCreator = tooltipCreator,
               factory = factory,
               callback =
                   object : DetailListAdapter.Callback {
@@ -399,8 +395,8 @@ internal constructor(
     bottomDecoration?.also { binding.detailList.removeItemDecoration(it) }
     bottomDecoration =
         LinearBoundsMarginDecoration(bottomMargin = height).apply {
-      binding.detailList.addItemDecoration(this)
-    }
+          binding.detailList.addItemDecoration(this)
+        }
   }
 
   override fun onRender(state: UiRender<DetailViewState>) {

@@ -34,12 +34,12 @@ import com.pyamsoft.fridge.detail.DetailFragment
 import com.pyamsoft.fridge.entry.create.CreateEntrySheet
 import com.pyamsoft.fridge.main.VersionChecker
 import com.pyamsoft.fridge.ui.SnackbarContainer
-import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.arch.StateSaver
 import com.pyamsoft.pydroid.arch.UiController
 import com.pyamsoft.pydroid.arch.createComponent
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R
+import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.ui.app.requireToolbarActivity
 import com.pyamsoft.pydroid.ui.arch.fromViewModelFactory
 import com.pyamsoft.pydroid.ui.databinding.LayoutCoordinatorBinding
@@ -92,7 +92,9 @@ internal class EntryFragment : Fragment(), SnackbarContainer, UiController<Entry
             requireToolbarActivity(),
             requireActivity(),
             viewLifecycleOwner,
-            binding.layoutCoordinator)
+        )
+        .plusEntryComponent()
+        .create(binding.layoutCoordinator)
         .inject(this)
 
     val container = requireNotNull(container)

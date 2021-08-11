@@ -31,13 +31,14 @@ import com.pyamsoft.fridge.db.item.FridgeItem
 import com.pyamsoft.fridge.entry.EntryViewState
 import com.pyamsoft.fridge.entry.ReadOnlyEntryList
 import com.pyamsoft.fridge.entry.ReadOnlyListEvents
-import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.arch.StateSaver
+import com.pyamsoft.pydroid.arch.UiSavedStateWriter
 import com.pyamsoft.pydroid.arch.createComponent
 import com.pyamsoft.pydroid.arch.newUiController
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R
 import com.pyamsoft.pydroid.ui.app.makeFullscreen
+import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.ui.arch.fromViewModelFactory
 import com.pyamsoft.pydroid.ui.databinding.LayoutConstraintBinding
 import com.pyamsoft.pydroid.ui.util.layout
@@ -75,8 +76,9 @@ internal class ItemMoveDialog : AppCompatDialogFragment() {
     val parent = binding.layoutConstraint
     Injector.obtainFromApplication<FridgeComponent>(view.context)
         .plusItemMoveComponent()
-        .create(
-            requireAppBarActivity(), requireActivity(), viewLifecycleOwner, parent, itemId, entryId)
+        .create(requireAppBarActivity(), requireActivity(), viewLifecycleOwner, itemId, entryId)
+        .plusItemMoveComponent()
+        .create(parent)
         .inject(this)
 
     val list = requireNotNull(list)
@@ -123,9 +125,21 @@ internal class ItemMoveDialog : AppCompatDialogFragment() {
         }
 
     stateSaver =
-        StateSaver { outState ->
-          listSaver.saveState(outState)
-          moveSaver.saveState(outState)
+        object : StateSaver {
+
+          private val savers =
+              arrayOf(
+                  listSaver,
+                  moveSaver,
+              )
+
+          override fun saveState(outState: Bundle) {
+            savers.forEach { it.saveState(outState) }
+          }
+
+          override fun saveState(outState: UiSavedStateWriter) {
+            savers.forEach { it.saveState(outState) }
+          }
         }
 
     parent.layout {

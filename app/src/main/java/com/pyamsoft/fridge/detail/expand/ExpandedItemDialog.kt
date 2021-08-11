@@ -97,11 +97,13 @@ internal class ExpandedItemDialog :
         .create(
             this,
             requireActivity(),
-            binding.layoutConstraint,
             viewLifecycleOwner,
             itemId,
             entryId,
-            presenceArgument)
+            presenceArgument,
+        )
+        .plusExpandComponent()
+        .create(binding.layoutConstraint)
         .inject(this)
 
     val name = requireNotNull(name)

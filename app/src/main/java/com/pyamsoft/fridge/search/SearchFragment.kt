@@ -32,14 +32,15 @@ import com.pyamsoft.fridge.detail.DetailPresenceSwitcher
 import com.pyamsoft.fridge.detail.DetailSwitcherViewModel
 import com.pyamsoft.fridge.detail.DetailViewEvent
 import com.pyamsoft.fridge.detail.expand.ExpandedItemDialog
-import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.arch.StateSaver
+import com.pyamsoft.pydroid.arch.UiSavedStateWriter
 import com.pyamsoft.pydroid.arch.createComponent
 import com.pyamsoft.pydroid.arch.createSavedStateViewModelFactory
 import com.pyamsoft.pydroid.arch.emptyController
 import com.pyamsoft.pydroid.arch.newUiController
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R as R2
+import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.ui.arch.fromViewModelFactory
 import com.pyamsoft.pydroid.ui.databinding.LayoutCoordinatorBinding
 import com.pyamsoft.pydroid.ui.util.show
@@ -108,10 +109,12 @@ internal class SearchFragment : Fragment() {
             this,
             requireAppBarActivity(),
             requireActivity(),
-            binding.layoutCoordinator,
             viewLifecycleOwner,
             entryId,
-            presence)
+            presence,
+        )
+        .plusSearchComponent()
+        .create(binding.layoutCoordinator)
         .inject(this)
 
     val nestedList = requireNotNull(nestedList)
@@ -190,11 +193,23 @@ internal class SearchFragment : Fragment() {
         }
 
     stateSaver =
-        StateSaver { outState ->
-          listSaver.saveState(outState)
-          appBarSaver.saveState(outState)
-          searchSaver.saveState(outState)
-          filterSaver.saveState(outState)
+        object : StateSaver {
+
+          private val savers =
+              arrayOf(
+                  listSaver,
+                  appBarSaver,
+                  searchSaver,
+                  filterSaver,
+              )
+
+          override fun saveState(outState: Bundle) {
+            savers.forEach { it.saveState(outState) }
+          }
+
+          override fun saveState(outState: UiSavedStateWriter) {
+            savers.forEach { it.saveState(outState) }
+          }
         }
 
     container.layout {

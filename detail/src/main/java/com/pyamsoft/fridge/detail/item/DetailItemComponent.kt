@@ -36,8 +36,6 @@ interface DetailItemComponent {
     fun create(
         @BindsInstance parent: ViewGroup,
         @BindsInstance @Named("item_editable") editable: Boolean,
-        @BindsInstance themeProvider: ThemeProvider,
-        @BindsInstance tooltipCreator: TooltipCreator
     ): DetailItemComponent
   }
 }

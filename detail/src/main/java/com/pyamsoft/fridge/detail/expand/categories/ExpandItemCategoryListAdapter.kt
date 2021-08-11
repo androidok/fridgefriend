@@ -22,12 +22,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.pyamsoft.fridge.detail.databinding.ExpandCategoryItemHolderBinding
-import com.pyamsoft.pydroid.ui.theme.ThemeProvider
 
 internal class ExpandItemCategoryListAdapter
 internal constructor(
     private val owner: LifecycleOwner,
-    private val themeProvider: ThemeProvider,
     private val factory: ExpandCategoryComponent.Factory,
     private val callback: Callback
 ) : ListAdapter<ExpandedCategoryViewState, ExpandedCategoryViewHolder>(DIFFER) {
@@ -43,7 +41,7 @@ internal constructor(
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpandedCategoryViewHolder {
     val inflater = LayoutInflater.from(parent.context)
     val binding = ExpandCategoryItemHolderBinding.inflate(inflater, parent, false)
-    return ExpandedCategoryViewHolder(binding, owner, themeProvider, factory, callback)
+    return ExpandedCategoryViewHolder(binding, owner, factory, callback)
   }
 
   override fun onBindViewHolder(holder: ExpandedCategoryViewHolder, position: Int) {

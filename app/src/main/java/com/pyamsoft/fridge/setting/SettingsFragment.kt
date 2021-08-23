@@ -24,14 +24,13 @@ import androidx.fragment.app.activityViewModels
 import com.pyamsoft.fridge.FridgeComponent
 import com.pyamsoft.fridge.core.FridgeViewModelFactory
 import com.pyamsoft.fridge.main.VersionChecker
-import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.arch.StateSaver
 import com.pyamsoft.pydroid.arch.UiController
 import com.pyamsoft.pydroid.arch.UnitControllerEvent
 import com.pyamsoft.pydroid.arch.createComponent
 import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
-import com.pyamsoft.pydroid.ui.arch.fromViewModelFactory
+import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.ui.settings.AppSettingsFragment
 import com.pyamsoft.pydroid.ui.settings.AppSettingsPreferenceFragment
 import com.pyamsoft.pydroid.ui.util.applyAppBarOffset

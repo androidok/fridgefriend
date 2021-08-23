@@ -18,8 +18,6 @@ package com.pyamsoft.fridge.detail.item
 
 import android.view.ViewGroup
 import androidx.annotation.CheckResult
-import com.pyamsoft.fridge.tooltip.TooltipCreator
-import com.pyamsoft.pydroid.ui.theme.ThemeProvider
 import dagger.BindsInstance
 import dagger.Subcomponent
 import javax.inject.Named

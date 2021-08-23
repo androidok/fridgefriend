@@ -25,6 +25,7 @@ import com.pyamsoft.fridge.db.item.FridgeItem
 import com.pyamsoft.fridge.detail.databinding.ExpandToolbarBinding
 import com.pyamsoft.fridge.entry.EntryViewEvent
 import com.pyamsoft.fridge.entry.EntryViewState
+import com.pyamsoft.fridge.ui.view.UiSearchToolbar
 import com.pyamsoft.fridge.ui.view.UiToolbar
 import com.pyamsoft.fridge.ui.withRoundedBackground
 import com.pyamsoft.pydroid.arch.BaseUiView
@@ -50,8 +51,9 @@ internal constructor(
 
   private val delegate =
       object :
-          UiToolbar<EntryViewState.Sorts, EntryViewState, EntryViewEvent>(
+          UiSearchToolbar<EntryViewState.Sorts, EntryViewState, EntryViewEvent>(
               withToolbar = { it(binding.expandToolbar) }) {
+
         override fun onGetSortForMenuItem(itemId: Int): EntryViewState.Sorts? =
             when (itemId) {
               itemIdCreatedDate -> EntryViewState.Sorts.CREATED
@@ -63,7 +65,7 @@ internal constructor(
           publish(ItemMoveViewEvent.SearchQuery(search))
         }
 
-        override fun publishSortEvent(sort: State.Sort<EntryViewState.Sorts>) {
+        override fun publishSortEvent(sort: UiToolbar.State.Sort<EntryViewState.Sorts>) {
           publish(ItemMoveViewEvent.ChangeSort(sort.original))
         }
       }

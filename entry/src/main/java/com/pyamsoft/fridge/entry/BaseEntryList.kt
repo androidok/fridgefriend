@@ -57,9 +57,9 @@ protected constructor(
     doOnInflate {
       binding.entryList.layoutManager =
           LinearLayoutManager(binding.entryList.context).apply {
-        isItemPrefetchEnabled = true
-        initialPrefetchItemCount = 3
-      }
+            isItemPrefetchEnabled = true
+            initialPrefetchItemCount = 3
+          }
     }
 
     doOnInflate {

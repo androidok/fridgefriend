@@ -47,12 +47,12 @@ internal constructor(
 
     delegate.initialize(scope)
 
-    viewModelScope.launch(context = Dispatchers.Default) {
+    scope.launch(context = Dispatchers.Default) {
       val sort = restoreSavedState(SAVED_SORT) { DetailViewState.Sorts.CREATED }
       handleUpdateSort(sort)
     }
 
-    viewModelScope.launch(context = Dispatchers.Default) {
+    scope.launch(context = Dispatchers.Default) {
       val search = restoreSavedState(SAVED_SEARCH) { "" }
       if (search.isNotBlank()) {
         handleUpdateSearch(search)

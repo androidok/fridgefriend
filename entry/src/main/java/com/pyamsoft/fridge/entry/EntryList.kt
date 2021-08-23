@@ -197,8 +197,8 @@ internal constructor(
     bottomDecoration?.also { binding.entryList.removeItemDecoration(it) }
     bottomDecoration =
         LinearBoundsMarginDecoration(bottomMargin = height).apply {
-      binding.entryList.addItemDecoration(this)
-    }
+          binding.entryList.addItemDecoration(this)
+        }
   }
 
   override fun onRefresh() {

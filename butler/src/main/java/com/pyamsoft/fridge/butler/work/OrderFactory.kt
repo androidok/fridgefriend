@@ -18,7 +18,6 @@ package com.pyamsoft.fridge.butler.work
 
 import androidx.annotation.CheckResult
 import com.pyamsoft.fridge.butler.params.ItemParameters
-import javax.inject.Singleton
 
 interface OrderFactory {
 

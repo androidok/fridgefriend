@@ -43,6 +43,7 @@ import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R as R2
 import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
+import com.pyamsoft.pydroid.ui.app.requireToolbarActivity
 import com.pyamsoft.pydroid.ui.databinding.LayoutCoordinatorBinding
 import com.pyamsoft.pydroid.ui.util.show
 import javax.inject.Inject
@@ -63,6 +64,8 @@ internal class SearchFragment : Fragment() {
 
   @JvmField @Inject internal var switcher: DetailPresenceSwitcher? = null
 
+  @JvmField @Inject internal var toolbar: SearchToolbar? = null
+
   @JvmField @Inject internal var factory: FridgeViewModelFactory? = null
   private val appBarViewModel by viewModels<DetailSwitcherViewModel> {
     factory.requireNotNull().create(this)
@@ -81,6 +84,11 @@ internal class SearchFragment : Fragment() {
   @JvmField @Inject internal var searchFactory: SearchViewModel.Factory? = null
   private val viewModel by viewModels<SearchViewModel> {
     searchFactory.requireNotNull().asFactory(this)
+  }
+
+  @JvmField @Inject internal var toolbarFactory: SearchToolbarViewModel.Factory? = null
+  private val toolbarViewModel by viewModels<SearchToolbarViewModel> {
+    toolbarFactory.requireNotNull().asFactory(this)
   }
 
   private var stateSaver: StateSaver? = null
@@ -109,6 +117,7 @@ internal class SearchFragment : Fragment() {
         .create(
             this,
             requireAppBarActivity(),
+            requireToolbarActivity(),
             requireActivity(),
             viewLifecycleOwner,
             entryId,
@@ -132,6 +141,19 @@ internal class SearchFragment : Fragment() {
             requireNotNull(search)) {
           return@createComponent when (it) {
             is DetailViewEvent.ToolbarEvent.Search.Query -> viewModel.handleUpdateSearch(it.search)
+          }
+        }
+
+    val toolbarSaver =
+        createComponent(
+            savedInstanceState,
+            viewLifecycleOwner,
+            toolbarViewModel,
+            controller = newUiController {},
+            toolbar.requireNotNull(),
+        ) {
+          return@createComponent when (it) {
+            is SearchToolbarViewEvent.ChangeSort -> toolbarViewModel.handleUpdateSort(it.sort)
           }
         }
 
@@ -198,6 +220,7 @@ internal class SearchFragment : Fragment() {
 
           private val savers =
               arrayOf(
+                  toolbarSaver,
                   listSaver,
                   appBarSaver,
                   searchSaver,
@@ -246,12 +269,14 @@ internal class SearchFragment : Fragment() {
     filterViewFactory = null
     listViewFactory = null
     searchFactory = null
+    toolbarFactory = null
 
     filter = null
     container = null
     switcher = null
     search = null
     spacer = null
+    toolbar = null
 
     nestedList = null
     nestedEmptyState = null

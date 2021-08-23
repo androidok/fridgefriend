@@ -20,7 +20,7 @@ import androidx.annotation.CheckResult
 import com.pyamsoft.fridge.db.entry.FridgeEntry
 import com.pyamsoft.fridge.db.item.FridgeItem
 import com.pyamsoft.fridge.ui.view.UiEditTextDelegate
-import com.pyamsoft.fridge.ui.view.UiToolbar
+import com.pyamsoft.fridge.ui.view.UiSearchToolbar
 import com.pyamsoft.pydroid.arch.UiControllerEvent
 import com.pyamsoft.pydroid.arch.UiViewEvent
 
@@ -43,7 +43,7 @@ internal constructor(
     val listItemPresence: FridgeItem.Presence,
     val counts: Counts?,
     val bottomOffset: Int,
-) : UiToolbar.State<DetailViewState.Sorts> {
+) : UiSearchToolbar.State<DetailViewState.Sorts> {
 
   val entryName = entry?.name().orEmpty()
 

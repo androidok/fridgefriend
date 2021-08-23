@@ -411,7 +411,8 @@ internal constructor(
   ) {
     scope.setState(
         stateChange = {
-          val cleanSearch = if (newSearch.isNotBlank()) newSearch.trim().asEditData() else "".asEditData(true)
+          val cleanSearch =
+              if (newSearch.isNotBlank()) newSearch.trim().asEditData() else "".asEditData(true)
           copy(search = cleanSearch)
         },
         andThen = { newState ->

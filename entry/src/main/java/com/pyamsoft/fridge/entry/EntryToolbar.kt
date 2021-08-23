@@ -16,6 +16,7 @@
 
 package com.pyamsoft.fridge.entry
 
+import com.pyamsoft.fridge.ui.view.UiSearchToolbar
 import com.pyamsoft.fridge.ui.view.UiToolbar
 import com.pyamsoft.pydroid.ui.app.ToolbarActivity
 import com.pyamsoft.pydroid.ui.util.setUpEnabled
@@ -26,7 +27,7 @@ class EntryToolbar
 internal constructor(
     toolbarActivity: ToolbarActivity,
 ) :
-    UiToolbar<EntryViewState.Sorts, EntryViewState, EntryViewEvent.ToolbarEvent>(
+    UiSearchToolbar<EntryViewState.Sorts, EntryViewState, EntryViewEvent.ToolbarEvent>(
         withToolbar = { toolbarActivity.withToolbar(it) }) {
 
   init {
@@ -39,7 +40,7 @@ internal constructor(
     publish(EntryViewEvent.ToolbarEvent.SearchQuery(search))
   }
 
-  override fun publishSortEvent(sort: State.Sort<EntryViewState.Sorts>) {
+  override fun publishSortEvent(sort: UiToolbar.State.Sort<EntryViewState.Sorts>) {
     publish(EntryViewEvent.ToolbarEvent.ChangeSort(sort.original))
   }
 

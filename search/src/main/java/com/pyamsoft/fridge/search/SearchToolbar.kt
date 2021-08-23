@@ -14,52 +14,36 @@
  * limitations under the License.
  */
 
-package com.pyamsoft.fridge.detail
+package com.pyamsoft.fridge.search
 
 import android.view.View
 import com.pyamsoft.fridge.db.item.FridgeItem
-import com.pyamsoft.fridge.ui.view.UiSearchToolbar
+import com.pyamsoft.fridge.detail.DetailViewState
 import com.pyamsoft.fridge.ui.view.UiToolbar
 import com.pyamsoft.pydroid.arch.UiRender
 import com.pyamsoft.pydroid.ui.app.ToolbarActivity
-import com.pyamsoft.pydroid.ui.util.DebouncedOnClickListener
 import com.pyamsoft.pydroid.ui.util.setUpEnabled
 import javax.inject.Inject
 
-class DetailToolbar
+class SearchToolbar
 @Inject
 internal constructor(
     toolbarActivity: ToolbarActivity,
 ) :
-    UiSearchToolbar<DetailViewState.Sorts, DetailViewState, DetailViewEvent.ToolbarEvent>(
+    UiToolbar<DetailViewState.Sorts, DetailViewState, SearchToolbarViewEvent>(
         withToolbar = { toolbarActivity.withToolbar(it) }) {
 
   private val itemIdPurchasedDate = View.generateViewId()
   private val itemIdExpirationDate = View.generateViewId()
 
   init {
-    doOnInflate {
-      toolbarActivity.withToolbar { toolbar ->
-        toolbar.setUpEnabled(true)
-        toolbar.setNavigationOnClickListener(
-            DebouncedOnClickListener.create { publish(DetailViewEvent.ToolbarEvent.Toolbar.Back) })
-      }
-    }
+    doOnInflate { toolbarActivity.withToolbar { toolbar -> toolbar.setUpEnabled(false) } }
 
-    doOnTeardown {
-      toolbarActivity.withToolbar { toolbar ->
-        toolbar.setUpEnabled(false)
-        toolbar.setNavigationOnClickListener(null)
-      }
-    }
+    doOnTeardown { toolbarActivity.withToolbar { toolbar -> toolbar.setUpEnabled(false) } }
   }
 
-  override fun publishSearchEvent(search: String) {
-    publish(DetailViewEvent.ToolbarEvent.Search.Query(search))
-  }
-
-  override fun publishSortEvent(sort: UiToolbar.State.Sort<DetailViewState.Sorts>) {
-    publish(DetailViewEvent.ToolbarEvent.Toolbar.ChangeSort(sort.original))
+  override fun publishSortEvent(sort: State.Sort<DetailViewState.Sorts>) {
+    publish(SearchToolbarViewEvent.ChangeSort(sort.original))
   }
 
   override fun onGetSortForMenuItem(itemId: Int): DetailViewState.Sorts? =
@@ -82,8 +66,7 @@ internal constructor(
   }
 
   private fun handleExtraSubItems(presence: FridgeItem.Presence) {
-    val isHavePresence = presence == FridgeItem.Presence.HAVE
-    val showExtraMenuItems = isHavePresence && !isSearchExpanded()
+    val showExtraMenuItems = presence == FridgeItem.Presence.HAVE
     setItemVisibility(itemIdPurchasedDate, showExtraMenuItems)
     setItemVisibility(itemIdExpirationDate, showExtraMenuItems)
   }

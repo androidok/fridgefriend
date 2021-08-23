@@ -30,7 +30,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SearchViewModel
+class SearchToolbarViewModel
 @AssistedInject
 internal constructor(
     private val delegate: DetailListStateModel,
@@ -50,29 +50,23 @@ internal constructor(
     delegate.initialize(scope)
 
     scope.launch(context = Dispatchers.Default) {
-      val search = restoreSavedState(SAVED_SEARCH) { "" }
-      if (search.isNotBlank()) {
-        handleUpdateSearch(search)
-      }
+      val sort = restoreSavedState(SAVED_SORT) { DetailViewState.Sorts.CREATED }
+      handleUpdateSort(sort)
     }
   }
 
-  fun handleUpdateSearch(search: String) {
-    delegate.handleUpdateSearch(viewModelScope, search) { newSearch ->
-      if (newSearch.isNotBlank()) {
-        putSavedState(SAVED_SEARCH, newSearch)
-      } else {
-        removeSavedState(SAVED_SEARCH)
-      }
+  fun handleUpdateSort(sort: DetailViewState.Sorts) {
+    delegate.handleUpdateSort(viewModelScope, sort) { newSort ->
+      putSavedState(SAVED_SORT, newSort.name)
     }
   }
 
   companion object {
-    private const val SAVED_SEARCH = "search"
+    private const val SAVED_SORT = "sort"
   }
 
   @AssistedFactory
-  interface Factory : UiSavedStateViewModelProvider<SearchViewModel> {
-    override fun create(savedState: UiSavedState): SearchViewModel
+  interface Factory : UiSavedStateViewModelProvider<SearchToolbarViewModel> {
+    override fun create(savedState: UiSavedState): SearchToolbarViewModel
   }
 }

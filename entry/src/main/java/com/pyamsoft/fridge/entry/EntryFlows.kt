@@ -19,7 +19,7 @@ package com.pyamsoft.fridge.entry
 import androidx.annotation.CheckResult
 import com.pyamsoft.fridge.db.entry.FridgeEntry
 import com.pyamsoft.fridge.db.item.FridgeItem
-import com.pyamsoft.fridge.ui.view.UiToolbar
+import com.pyamsoft.fridge.ui.view.UiSearchToolbar
 import com.pyamsoft.pydroid.arch.UiControllerEvent
 import com.pyamsoft.pydroid.arch.UiViewEvent
 
@@ -35,7 +35,7 @@ internal constructor(
     val search: String,
     val bottomOffset: Int,
     val sort: Sorts,
-) : UiToolbar.State<EntryViewState.Sorts> {
+) : UiSearchToolbar.State<EntryViewState.Sorts> {
 
   override val toolbarSearch = search
   override val toolbarSort = sort.asToolbarSort()

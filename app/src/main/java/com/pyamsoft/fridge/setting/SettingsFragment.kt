@@ -40,7 +40,7 @@ internal class SettingsFragment : AppSettingsFragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    view.applyAppBarOffset(requireAppBarActivity(), viewLifecycleOwner)
+    view.apply { post { applyAppBarOffset(requireAppBarActivity(), viewLifecycleOwner) } }
   }
 
   override fun provideSettingsFragment(): AppSettingsPreferenceFragment {

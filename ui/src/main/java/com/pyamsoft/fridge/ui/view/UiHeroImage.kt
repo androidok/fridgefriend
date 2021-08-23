@@ -45,7 +45,9 @@ protected constructor(
   private var loaded: Loaded? = null
 
   init {
-    doOnInflate { binding.coreHeroCollapse.applyAppBarOffset(appBarActivity, owner) }
+    doOnInflate {
+      binding.coreHeroCollapse.apply { post { applyAppBarOffset(appBarActivity, owner) } }
+    }
 
     doOnTeardown { clear() }
   }

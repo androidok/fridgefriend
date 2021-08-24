@@ -16,28 +16,32 @@
 
 package com.pyamsoft.fridge.detail
 
-import android.view.ViewGroup
 import androidx.annotation.CheckResult
 import com.pyamsoft.fridge.core.FragmentScope
-import dagger.BindsInstance
-import dagger.Subcomponent
+import com.pyamsoft.pydroid.bus.EventBus
+import com.pyamsoft.pydroid.bus.EventConsumer
+import dagger.Binds
+import dagger.Module
+import dagger.Provides
 
-@FragmentScope
-@Subcomponent(
-    modules =
-        [
-            DetailModule::class,
-        ])
-internal interface DetailComponent {
+@Module
+abstract class DetailModule {
 
-  fun inject(fragment: DetailFragment)
+  @Binds
+  @CheckResult
+  internal abstract fun bindOffsetConsumer(
+      impl: EventBus<DetailTopOffset>
+  ): EventConsumer<DetailTopOffset>
 
-  @Subcomponent.Factory
-  interface Factory {
+  @Module
+  companion object {
 
+    @JvmStatic
+    @Provides
+    @FragmentScope
     @CheckResult
-    fun create(
-        @BindsInstance parent: ViewGroup,
-    ): DetailComponent
+    internal fun provideOffsetBus(): EventBus<DetailTopOffset> {
+      return EventBus.create(emitOnlyWhenActive = false, replayCount = 1)
+    }
   }
 }

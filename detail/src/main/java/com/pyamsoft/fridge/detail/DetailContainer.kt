@@ -16,22 +16,14 @@
 
 package com.pyamsoft.fridge.detail
 
-import android.content.res.ColorStateList
-import android.graphics.drawable.GradientDrawable
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.view.ViewPropertyAnimatorCompat
 import androidx.core.view.updatePadding
-import com.pyamsoft.fridge.core.R
 import com.pyamsoft.fridge.detail.databinding.DetailContainerBinding
-import com.pyamsoft.fridge.ui.animatePopInFromBottom
 import com.pyamsoft.pydroid.arch.BaseUiView
 import com.pyamsoft.pydroid.arch.UiRender
 import com.pyamsoft.pydroid.ui.theme.ThemeProvider
 import com.pyamsoft.pydroid.ui.util.layout
-import com.pyamsoft.pydroid.util.asDp
-import com.pyamsoft.pydroid.util.darker
-import com.pyamsoft.pydroid.util.lighter
 import javax.inject.Inject
 
 class DetailContainer
@@ -39,7 +31,6 @@ class DetailContainer
 internal constructor(
     emptyState: DetailEmptyState,
     list: DetailList,
-    private val theming: ThemeProvider,
     parent: ViewGroup,
 ) : BaseUiView<DetailViewState, DetailViewEvent.ListEvent, DetailContainerBinding>(parent) {
 
@@ -47,41 +38,8 @@ internal constructor(
 
   override val layoutRoot by boundView { detailContainer }
 
-  private var animator: ViewPropertyAnimatorCompat? = null
-
   init {
     nest(emptyState, list)
-
-    doOnTeardown {
-      animator?.cancel()
-      animator = null
-    }
-
-    doOnInflate {
-      layoutRoot.background =
-          GradientDrawable().apply {
-            val context = layoutRoot.context
-            shape = GradientDrawable.RECTANGLE
-            val radius = 16.asDp(context).toFloat()
-            cornerRadii = floatArrayOf(radius, radius, radius, radius, 0F, 0F, 0F, 0F)
-
-            val backgroundColor = context.getColor(R.color.windowBackground)
-            val ratio = 0.15F
-            val listBackgroundColor =
-                if (theming.isDarkTheme()) {
-                  backgroundColor.lighter(ratio)
-                } else {
-                  backgroundColor.darker(ratio)
-                }
-            color = ColorStateList.valueOf(listBackgroundColor)
-          }
-    }
-
-    doOnInflate {
-      if (animator == null) {
-        animator = animatePopInFromBottom(layoutRoot)
-      }
-    }
 
     doOnInflate {
       binding.detailContainer.layout {

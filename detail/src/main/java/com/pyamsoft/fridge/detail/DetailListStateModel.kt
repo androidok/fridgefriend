@@ -18,24 +18,19 @@ package com.pyamsoft.fridge.detail
 
 import androidx.annotation.CheckResult
 import com.pyamsoft.fridge.core.FragmentScope
-import com.pyamsoft.fridge.core.today
 import com.pyamsoft.fridge.db.entry.FridgeEntry
 import com.pyamsoft.fridge.db.item.FridgeItem
 import com.pyamsoft.fridge.db.item.FridgeItemChangeEvent
-import com.pyamsoft.fridge.db.item.cleanMidnight
-import com.pyamsoft.fridge.db.item.daysLaterMidnight
 import com.pyamsoft.fridge.db.item.isArchived
-import com.pyamsoft.fridge.db.item.isExpired
-import com.pyamsoft.fridge.db.item.isExpiringSoon
 import com.pyamsoft.fridge.detail.base.UpdateDelegate
 import com.pyamsoft.fridge.ui.BottomOffset
+import com.pyamsoft.fridge.ui.view.UiToolbar
 import com.pyamsoft.fridge.ui.view.asEditData
 import com.pyamsoft.highlander.highlander
 import com.pyamsoft.pydroid.arch.UiStateModel
 import com.pyamsoft.pydroid.bus.EventConsumer
 import com.pyamsoft.pydroid.core.ResultWrapper
 import com.pyamsoft.pydroid.util.PreferenceListener
-import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 import kotlin.math.max
@@ -53,6 +48,7 @@ internal constructor(
     private val interactor: DetailInteractor,
     private val entryId: FridgeEntry.Id,
     private val bottomOffsetBus: EventConsumer<BottomOffset>,
+    private val topOffsetBus: EventConsumer<DetailTopOffset>,
     listItemPresence: FridgeItem.Presence,
 ) :
     UiStateModel<DetailViewState>(
@@ -62,19 +58,19 @@ internal constructor(
                 search = "".asEditData(),
                 isLoading = false,
                 showing = DetailViewState.Showing.FRESH,
-                sort = DetailViewState.Sorts.CREATED,
+                sort = UiToolbar.SortType.CREATED_TIME,
                 listError = null,
                 undoable = null,
                 expirationRange = null,
                 isSameDayExpired = null,
                 isShowAllItemsEmptyState = null,
                 listItemPresence = listItemPresence,
-                counts = null,
+                items = emptyList(),
+                showAllEntries = entryId.isEmpty(),
+                topOffset = 0,
                 bottomOffset = 0,
-                displayedItems = emptyList(),
-                allItems = emptyList())) {
-
-  private val isAllEntries = entryId.isEmpty()
+            ),
+    ) {
 
   private val updateDelegate = UpdateDelegate(interactor) { handleError(it) }
 
@@ -90,7 +86,7 @@ internal constructor(
 
   private val refreshRunner =
       highlander<ResultWrapper<List<FridgeItem>>, Boolean> { force ->
-        if (isAllEntries) {
+        if (state.showAllEntries) {
           interactor.getAllItems(force)
         } else {
           interactor.getItems(entryId, force)
@@ -103,7 +99,11 @@ internal constructor(
     }
 
     scope.launch(context = Dispatchers.Default) {
-      if (!isAllEntries) {
+      topOffsetBus.onEvent { setState { copy(topOffset = it.height) } }
+    }
+
+    scope.launch(context = Dispatchers.Default) {
+      if (!state.showAllEntries) {
         interactor
             .loadEntry(entryId)
             .onSuccess { setState { copy(entry = it) } }
@@ -151,7 +151,7 @@ internal constructor(
     }
 
     scope.launch(context = Dispatchers.Default) {
-      if (isAllEntries) {
+      if (state.showAllEntries) {
         interactor.listenForAllChanges { handleRealtime(it) }
       } else {
         interactor.listenForChanges(entryId) { handleRealtime(it) }
@@ -203,14 +203,14 @@ internal constructor(
 
   private fun CoroutineScope.handleRealtimeInsert(item: FridgeItem) {
     setState {
-      val newItems = allItems.toMutableList().also { insertOrUpdate(it, item) }
+      val newItems = items.toMutableList().also { insertOrUpdate(it, item) }
       regenerateItems(newItems)
     }
   }
 
   private fun CoroutineScope.handleRealtimeUpdate(item: FridgeItem) {
     setState {
-      val newItems = allItems.toMutableList().also { insertOrUpdate(it, item) }
+      val newItems = items.toMutableList().also { insertOrUpdate(it, item) }
       regenerateItems(newItems)
           .copy(
               // Show undo banner if we are archiving this item, otherwise no-op
@@ -220,7 +220,7 @@ internal constructor(
 
   private fun CoroutineScope.handleRealtimeDelete(item: FridgeItem, offerUndo: Boolean) {
     setState {
-      val newItems = allItems.filterNot { it.id() == item.id() }
+      val newItems = items.filterNot { it.id() == item.id() }
       regenerateItems(newItems)
           .copy(
               // Show undo banner
@@ -231,12 +231,7 @@ internal constructor(
   @CheckResult
   private fun DetailViewState.regenerateItems(items: List<FridgeItem>): DetailViewState {
     val newItems = prepareListItems(items)
-    val visibleItems = getOnlyVisibleItems(newItems)
-    return copy(
-        allItems = newItems,
-        displayedItems = visibleItems,
-        counts = calculateCounts(visibleItems),
-    )
+    return copy(items = newItems)
   }
 
   private fun CoroutineScope.handleListRefreshed(items: List<FridgeItem>) {
@@ -256,10 +251,10 @@ internal constructor(
     val dateSorter =
         Comparator<FridgeItem> { o1, o2 ->
           when (sort) {
-            DetailViewState.Sorts.CREATED -> o1.createdTime().compareTo(o2.createdTime())
-            DetailViewState.Sorts.NAME -> o1.name().compareTo(o2.name(), ignoreCase = true)
-            DetailViewState.Sorts.PURCHASED -> o1.purchaseTime().compareTo(o2.purchaseTime())
-            DetailViewState.Sorts.EXPIRATION -> o1.expireTime().compareTo(o2.expireTime())
+            UiToolbar.SortType.CREATED_TIME -> o1.createdTime().compareTo(o2.createdTime())
+            UiToolbar.SortType.NAME -> o1.name().compareTo(o2.name(), ignoreCase = true)
+            UiToolbar.SortType.PURCHASE_DATE -> o1.purchaseTime().compareTo(o2.purchaseTime())
+            UiToolbar.SortType.EXPIRATION_DATE -> o1.expireTime().compareTo(o2.expireTime())
           }
         }
 
@@ -279,87 +274,6 @@ internal constructor(
     }
   }
 
-  @CheckResult
-  private fun DetailViewState.calculateCounts(items: List<FridgeItem>): DetailViewState.Counts? =
-      when (showing) {
-        DetailViewState.Showing.FRESH -> calculateFreshCounts(items)
-        DetailViewState.Showing.CONSUMED -> null
-        DetailViewState.Showing.SPOILED -> null
-      }
-
-  @CheckResult
-  private fun DetailViewState.calculateFreshCounts(
-      items: List<FridgeItem>
-  ): DetailViewState.Counts? {
-    return when (listItemPresence) {
-      FridgeItem.Presence.HAVE -> {
-        val expiringSoonRange = this.expirationRange?.range ?: return null
-        val isSameDayExpired = this.isSameDayExpired?.isSame ?: return null
-        val today = today().cleanMidnight()
-        val later = today().daysLaterMidnight(expiringSoonRange)
-        generateHaveFreshCount(items, today, later, isSameDayExpired)
-      }
-      FridgeItem.Presence.NEED -> generateNeedFreshCount(items)
-    }
-  }
-
-  @CheckResult
-  private fun DetailViewState.generateNeedFreshCount(
-      items: List<FridgeItem>
-  ): DetailViewState.Counts {
-    val validItems = filterValid(items).filterNot { it.isArchived() }
-
-    val totalCount = validItems.sumOf { it.count() }
-    return DetailViewState.Counts(
-        totalCount = totalCount, firstCount = 0, secondCount = 0, thirdCount = 0)
-  }
-
-  @CheckResult
-  private fun DetailViewState.generateHaveFreshCount(
-      items: List<FridgeItem>,
-      today: Calendar,
-      later: Calendar,
-      isSameDayExpired: Boolean,
-  ): DetailViewState.Counts {
-    val validItems = filterValid(items).filterNot { it.isArchived() }
-
-    val totalCount = validItems.sumOf { it.count() }
-
-    val expiringSoonItemCount =
-        validItems.filter { it.isExpiringSoon(today, later, isSameDayExpired) }.sumOf { it.count() }
-
-    val expiredItemCount =
-        validItems.filter { it.isExpired(today, isSameDayExpired) }.sumOf { it.count() }
-
-    val freshItemCount = totalCount - expiringSoonItemCount - expiredItemCount
-
-    return DetailViewState.Counts(
-        totalCount = totalCount,
-        firstCount = freshItemCount,
-        secondCount = expiringSoonItemCount,
-        thirdCount = expiredItemCount)
-  }
-
-  @CheckResult
-  private fun DetailViewState.getOnlyVisibleItems(items: List<FridgeItem>): List<FridgeItem> {
-    // Default to showing all
-    val showAllItems = if (isAllEntries) isShowAllItemsEmptyState?.showAll ?: true else true
-
-    val query = search
-    val shows = showing
-    return items
-        .asSequence()
-        .filter {
-          return@filter when (shows) {
-            DetailViewState.Showing.FRESH -> !it.isArchived()
-            DetailViewState.Showing.CONSUMED -> it.isConsumed()
-            DetailViewState.Showing.SPOILED -> it.isSpoiled()
-          }
-        }
-        .filter { it.matchesQuery(query.text, showAllItems) }
-        .toList()
-  }
-
   private fun updateCount(scope: CoroutineScope, item: FridgeItem) {
     if (!item.isArchived()) {
       updateDelegate.updateItem(scope, item)
@@ -376,8 +290,8 @@ internal constructor(
 
   fun handleUpdateSort(
       scope: CoroutineScope,
-      newSort: DetailViewState.Sorts,
-      andThen: suspend (DetailViewState.Sorts) -> Unit,
+      newSort: UiToolbar.SortType,
+      andThen: suspend (UiToolbar.SortType) -> Unit,
   ) {
     scope.setState(
         stateChange = { copy(sort = newSort) },
@@ -395,7 +309,8 @@ internal constructor(
               // Reset the showing
               showing = DetailViewState.Showing.FRESH,
               // Reset the sort
-              sort = DetailViewState.Sorts.CREATED)
+              sort = UiToolbar.SortType.CREATED_TIME,
+          )
         },
         andThen = { handleRefreshList(this, false) })
   }

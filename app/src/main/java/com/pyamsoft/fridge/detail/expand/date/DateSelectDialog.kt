@@ -48,14 +48,18 @@ internal class DateSelectDialog :
 
   private var stateSaver: StateSaver? = null
 
-  override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
     Injector.obtainFromApplication<FridgeComponent>(requireContext())
         .plusDateSelectComponent()
         .inject(this)
 
     stateSaver =
         createComponent<UnitViewState, UnitViewEvent, DateSelectControllerEvent>(
-            savedInstanceState, viewLifecycleOwner, viewModel, this) {}
+            savedInstanceState, this, viewModel, this) {}
+  }
+
+  override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
     val today = today()
     val itemId = FridgeItem.Id(requireNotNull(requireArguments().getString(ITEM)))

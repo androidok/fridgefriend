@@ -77,7 +77,7 @@ internal constructor(
   private var rightBehindLoaded: Loaded? = null
   private var rightBehindDrawable: Drawable? = null
 
-  private val topDecoration = LinearBoundsMarginDecoration(topMargin = 0)
+  private val topDecoration = LinearBoundsMarginDecoration(bottomMargin = 0)
   private val bottomDecoration = LinearBoundsMarginDecoration(bottomMargin = 0)
 
   init {
@@ -161,13 +161,15 @@ internal constructor(
     }
 
     doOnInflate {
+      val staticTopDecoration = LinearBoundsMarginDecoration(topMargin = 0)
       binding.detailList
           .doOnApplyWindowInsets { _, insets, _ ->
             val toolbarTopMargin = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-            topDecoration.setMargin(top = toolbarTopMargin)
+            staticTopDecoration.setMargin(top = toolbarTopMargin)
             binding.detailList.invalidateItemDecorations()
           }
           .also { doOnTeardown { it.cancel() } }
+      binding.detailList.addItemDecoration(staticTopDecoration)
     }
 
     doOnInflate {
@@ -400,6 +402,12 @@ internal constructor(
     }
   }
 
+  private fun handleTopOffset(height: Int) {
+    // Add additional padding to the list top to account for floating toolbar
+    topDecoration.setMargin(top = height)
+    binding.detailList.invalidateItemDecorations()
+  }
+
   private fun handleBottomOffset(height: Int) {
     // Add additional padding to the list bottom to account for the height change in MainContainer
     bottomDecoration.setMargin(bottom = height)
@@ -408,6 +416,7 @@ internal constructor(
 
   override fun onRender(state: UiRender<DetailViewState>) {
     state.mapChanged { it.bottomOffset }.render(viewScope) { handleBottomOffset(it) }
+    state.mapChanged { it.topOffset }.render(viewScope) { handleTopOffset(it) }
     state.mapChanged { it.isLoading }.render(viewScope) { handleLoading(it) }
     state.render(viewScope) { s ->
       handleList(s)

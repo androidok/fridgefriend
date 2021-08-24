@@ -50,6 +50,8 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
 
   @JvmField @Inject internal var addNew: DetailAddItemView? = null
 
+  @JvmField @Inject internal var toolbar: DetailToolbar? = null
+
   @JvmField @Inject internal var listFactory: DetailListViewModel.Factory? = null
   private val listViewModel by viewModels<DetailListViewModel> {
     listFactory.requireNotNull().asFactory(this)
@@ -58,6 +60,11 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
   @JvmField @Inject internal var addFactory: DetailAddViewModel.Factory? = null
   private val addViewModel by viewModels<DetailAddViewModel> {
     addFactory.requireNotNull().asFactory(this)
+  }
+
+  @JvmField @Inject internal var toolbarFactory: DetailToolbarViewModel.Factory? = null
+  private val toolbarViewModel by viewModels<DetailToolbarViewModel> {
+    toolbarFactory.requireNotNull().asFactory(this)
   }
 
   private var stateSaver: StateSaver? = null
@@ -136,7 +143,7 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
                     is DetailControllerEvent.AddEvent.AddNew -> createItem(it.entryId, it.presence)
                   }
                 },
-            requireNotNull(addNew),
+            addNew.requireNotNull(),
         ) {
           return@createComponent when (it) {
             is DetailViewEvent.ButtonEvent.AddNew -> addViewModel.handleAddNew()
@@ -149,12 +156,32 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
           }
         }
 
+    val toolbarSaver =
+        createComponent(
+            savedInstanceState,
+            viewLifecycleOwner,
+            toolbarViewModel,
+            controller = newUiController {},
+            toolbar.requireNotNull(),
+        ) {
+          return@createComponent when (it) {
+            is DetailViewEvent.ToolbarEvent.Back -> requireActivity().onBackPressed()
+            is DetailViewEvent.ToolbarEvent.UpdateSort -> toolbarViewModel.handleSort(it.type)
+            is DetailViewEvent.ToolbarEvent.TopBarMeasured ->
+                toolbarViewModel.handleTopBarMeasured(it.height)
+            is DetailViewEvent.ToolbarEvent.TabSwitched ->
+                toolbarViewModel.handleTabsSwitched(it.isHave)
+              is DetailViewEvent.ToolbarEvent.Search -> toolbarViewModel.handleSearch(it.query)
+          }
+        }
+
     stateSaver =
         object : StateSaver {
 
           private val savers =
               arrayOf(
                   listSaver,
+                  toolbarSaver,
                   addSaver,
               )
 
@@ -182,9 +209,11 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
 
     addFactory = null
     listFactory = null
+    toolbarFactory = null
 
     container = null
     addNew = null
+    toolbar = null
 
     stateSaver = null
   }

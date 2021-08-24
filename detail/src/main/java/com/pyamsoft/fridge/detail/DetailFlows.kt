@@ -19,21 +19,20 @@ package com.pyamsoft.fridge.detail
 import androidx.annotation.CheckResult
 import com.pyamsoft.fridge.db.entry.FridgeEntry
 import com.pyamsoft.fridge.db.item.FridgeItem
+import com.pyamsoft.fridge.db.item.isArchived
 import com.pyamsoft.fridge.ui.view.UiEditTextDelegate
+import com.pyamsoft.fridge.ui.view.UiToolbar
 import com.pyamsoft.pydroid.arch.UiControllerEvent
 import com.pyamsoft.pydroid.arch.UiViewEvent
-import com.pyamsoft.pydroid.arch.UiViewState
 
 data class DetailViewState
 internal constructor(
-    // All currently displayed list items
-    val displayedItems: List<FridgeItem>,
-    // All the list items before filtering
-    val allItems: List<FridgeItem>,
+    override val sort: UiToolbar.SortType,
+    override val search: UiEditTextDelegate.Data,
+    val showAllEntries: Boolean,
+    val items: List<FridgeItem>,
     val isLoading: Boolean,
-    val search: UiEditTextDelegate.Data,
     val entry: FridgeEntry?,
-    val sort: Sorts,
     val showing: Showing,
     val listError: Throwable?,
     val undoable: Undoable?,
@@ -41,21 +40,39 @@ internal constructor(
     val isSameDayExpired: IsSameDayExpired?,
     val isShowAllItemsEmptyState: ShowAllItemsEmptyState?,
     val listItemPresence: FridgeItem.Presence,
-    val counts: Counts?,
+    val topOffset: Int,
     val bottomOffset: Int,
-) : UiViewState {
+) : UiToolbar.State {
 
-  val entryName = entry?.name().orEmpty()
+  // All currently displayed list items
+  val displayedItems: List<FridgeItem>
+
+  init {
+    displayedItems = getOnlyVisibleItems()
+  }
+  @CheckResult
+  private fun getOnlyVisibleItems(): List<FridgeItem> {
+    // Default to showing all
+    val showAllItems = if (showAllEntries) isShowAllItemsEmptyState?.showAll ?: true else true
+
+    val query = search
+    val shows = showing
+    return items
+        .asSequence()
+        .filter {
+          return@filter when (shows) {
+            Showing.FRESH -> !it.isArchived()
+            Showing.CONSUMED -> it.isConsumed()
+            Showing.SPOILED -> it.isSpoiled()
+          }
+        }
+        .filter { it.matchesQuery(query.text, showAllItems) }
+        .toList()
+  }
+
+  override val isHave: Boolean = listItemPresence == FridgeItem.Presence.HAVE
 
   data class Undoable internal constructor(val item: FridgeItem, val canQuickAdd: Boolean)
-
-  data class Counts
-  internal constructor(
-      val totalCount: Int,
-      val firstCount: Int,
-      val secondCount: Int,
-      val thirdCount: Int,
-  )
 
   @CheckResult
   internal fun FridgeItem.matchesQuery(query: String, defaultValue: Boolean): Boolean {
@@ -70,13 +87,6 @@ internal constructor(
     FRESH,
     CONSUMED,
     SPOILED
-  }
-
-  enum class Sorts {
-    CREATED,
-    NAME,
-    PURCHASED,
-    EXPIRATION
   }
 
   @CheckResult
@@ -131,25 +141,15 @@ sealed class DetailViewEvent : UiViewEvent {
 
   sealed class ToolbarEvent : DetailViewEvent() {
 
-    sealed class Search : ToolbarEvent() {
+    data class UpdateSort internal constructor(val type: UiToolbar.SortType) : ToolbarEvent()
 
-      data class Query(val search: String) : Search()
-    }
+    data class TopBarMeasured internal constructor(val height: Int) : ToolbarEvent()
 
-    sealed class Toolbar : ToolbarEvent() {
+    data class TabSwitched internal constructor(val isHave: Boolean) : ToolbarEvent()
 
-      object Back : Toolbar()
+    data class Search internal constructor(val query: String) : ToolbarEvent()
 
-      data class ChangeSort internal constructor(val sort: DetailViewState.Sorts) : Toolbar()
-    }
-  }
-
-  sealed class SwitcherEvent : DetailViewEvent() {
-
-    data class PresenceSwitched
-    internal constructor(
-        val presence: FridgeItem.Presence,
-    ) : SwitcherEvent()
+    object Back : ToolbarEvent()
   }
 }
 

@@ -16,28 +16,4 @@
 
 package com.pyamsoft.fridge.detail
 
-import android.view.ViewGroup
-import androidx.annotation.CheckResult
-import com.pyamsoft.fridge.core.FragmentScope
-import dagger.BindsInstance
-import dagger.Subcomponent
-
-@FragmentScope
-@Subcomponent(
-    modules =
-        [
-            DetailModule::class,
-        ])
-internal interface DetailComponent {
-
-  fun inject(fragment: DetailFragment)
-
-  @Subcomponent.Factory
-  interface Factory {
-
-    @CheckResult
-    fun create(
-        @BindsInstance parent: ViewGroup,
-    ): DetailComponent
-  }
-}
+data class DetailTopOffset internal constructor(val height: Int)

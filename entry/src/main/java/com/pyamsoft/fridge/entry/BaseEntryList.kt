@@ -30,7 +30,6 @@ import com.pyamsoft.pydroid.arch.UiRender
 import com.pyamsoft.pydroid.arch.UiViewEvent
 import com.pyamsoft.pydroid.ui.util.removeAllItemDecorations
 import com.pyamsoft.pydroid.util.asDp
-import io.cabriole.decorator.DecorationLookup
 import io.cabriole.decorator.LinearMarginDecoration
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import timber.log.Timber
@@ -102,24 +101,16 @@ protected constructor(
       val margin = 16.asDp(binding.entryList.context)
 
       LinearMarginDecoration.createHorizontal(
-              horizontalMargin = margin, orientation = RecyclerView.VERTICAL)
+              horizontalMargin = margin,
+              orientation = RecyclerView.VERTICAL,
+          )
           .apply { binding.entryList.addItemDecoration(this) }
 
       // Everything has a bottom margin
-      LinearMarginDecoration(bottomMargin = margin, orientation = RecyclerView.VERTICAL).apply {
-        binding.entryList.addItemDecoration(this)
-      }
-
-      // Everything but first item has a top margin
-      LinearMarginDecoration(
-              topMargin = margin,
+      LinearMarginDecoration.createVertical(
+              verticalMargin = margin,
               orientation = RecyclerView.VERTICAL,
-              decorationLookup =
-                  object : DecorationLookup {
-                    override fun shouldApplyDecoration(position: Int, itemCount: Int): Boolean {
-                      return position > 0
-                    }
-                  })
+          )
           .apply { binding.entryList.addItemDecoration(this) }
     }
 

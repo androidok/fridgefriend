@@ -20,9 +20,9 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.view.ViewGroup
 import androidx.annotation.CheckResult
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import com.mikepenz.fastadapter.swipe.SimpleSwipeCallback
 import com.pyamsoft.fridge.entry.item.EntryItemComponent
 import com.pyamsoft.fridge.entry.item.EntryItemViewHolder
@@ -31,6 +31,8 @@ import com.pyamsoft.pydroid.loader.ImageLoader
 import com.pyamsoft.pydroid.loader.ImageTarget
 import com.pyamsoft.pydroid.loader.Loaded
 import com.pyamsoft.pydroid.ui.theme.ThemeProvider
+import com.pyamsoft.pydroid.util.asDp
+import com.pyamsoft.pydroid.util.doOnApplyWindowInsets
 import com.pyamsoft.pydroid.util.tintWith
 import io.cabriole.decorator.LinearBoundsMarginDecoration
 import javax.inject.Inject
@@ -54,7 +56,8 @@ internal constructor(
   private var rightBehindLoaded: Loaded? = null
   private var rightBehindDrawable: Drawable? = null
 
-  private var bottomDecoration: RecyclerView.ItemDecoration? = null
+  private val topDecoration = LinearBoundsMarginDecoration(topMargin = 0)
+  private val bottomDecoration = LinearBoundsMarginDecoration(bottomMargin = 0)
 
   init {
     doOnInflate { setupSwipeCallback() }
@@ -66,7 +69,22 @@ internal constructor(
 
     doOnTeardown { clearLoaded() }
 
-    doOnTeardown { bottomDecoration = null }
+    doOnInflate {
+      binding.entryList
+          .doOnApplyWindowInsets { _, insets, _ ->
+            val toolbarTopMargin = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            topDecoration.setMargin(top = toolbarTopMargin)
+            binding.entryList.invalidateItemDecorations()
+          }
+          .also { doOnTeardown { it.cancel() } }
+    }
+
+    doOnInflate {
+      binding.entryList.apply {
+        addItemDecoration(topDecoration)
+        addItemDecoration(bottomDecoration)
+      }
+    }
   }
 
   private fun clearLoaded() {
@@ -185,11 +203,8 @@ internal constructor(
 
   override fun handleBottomOffset(height: Int) {
     // Add additional padding to the list bottom to account for the height change in MainContainer
-    bottomDecoration?.also { binding.entryList.removeItemDecoration(it) }
-    bottomDecoration =
-        LinearBoundsMarginDecoration(bottomMargin = height).apply {
-          binding.entryList.addItemDecoration(this)
-        }
+    bottomDecoration.setMargin(bottom = height)
+    binding.entryList.invalidateItemDecorations()
   }
 
   override fun onRefresh() {

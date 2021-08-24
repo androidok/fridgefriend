@@ -16,7 +16,6 @@
 
 package com.pyamsoft.fridge.main
 
-import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.view.ViewOutlineProvider
@@ -40,6 +39,7 @@ import com.pyamsoft.pydroid.ui.app.ToolbarActivityProvider
 import com.pyamsoft.pydroid.ui.privacy.addPrivacy
 import com.pyamsoft.pydroid.ui.privacy.removePrivacy
 import com.pyamsoft.pydroid.ui.theme.ThemeProvider
+import com.pyamsoft.pydroid.ui.util.doOnLayoutChanged
 import com.pyamsoft.pydroid.util.asDp
 import com.pyamsoft.pydroid.util.doOnApplyWindowInsets
 import javax.inject.Inject
@@ -103,14 +103,15 @@ internal constructor(
     }
 
     doOnInflate {
-      val listener =
-          View.OnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-            binding.mainAppbar.withRoundedBackground(applyAllCorners = true)
-            binding.mainToolbar.elevation = 0F
+      binding.mainAppbar
+          .doOnLayoutChanged { _, _, _, _, _, _, _, _, _,
+            ->
+            binding.apply {
+              mainAppbar.withRoundedBackground(applyAllCorners = true)
+              mainToolbar.elevation = 0F
+            }
           }
-      binding.mainAppbar.addOnLayoutChangeListener(listener)
-
-      doOnTeardown { binding.mainAppbar.removeOnLayoutChangeListener(listener) }
+          .also { doOnTeardown { it.cancel() } }
     }
   }
 

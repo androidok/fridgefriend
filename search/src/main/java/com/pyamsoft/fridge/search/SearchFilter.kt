@@ -38,7 +38,7 @@ internal constructor(
     private val owner: LifecycleOwner,
     private val imageLoader: ImageLoader,
     parent: ViewGroup,
-) : BaseUiView<DetailViewState, SearchViewEvent, SearchFilterBinding>(parent), SnackbarContainer {
+) : BaseUiView<DetailViewState, SearchViewEvent.FilterEvent, SearchFilterBinding>(parent), SnackbarContainer {
 
   override val viewBinding = SearchFilterBinding::inflate
 
@@ -49,7 +49,7 @@ internal constructor(
   init {
     doOnInflate {
       binding.searchFilter.setOnDebouncedClickListener {
-        publish(SearchViewEvent.ChangeCurrentFilter)
+        publish(SearchViewEvent.FilterEvent.ChangeCurrentFilter)
       }
     }
 
@@ -115,15 +115,15 @@ internal constructor(
       long(
           layoutRoot,
           message,
-          onHidden = { _, _ -> publish(SearchViewEvent.ReallyDeleteItemNoUndo) }) {
+          onHidden = { _, _ -> publish(SearchViewEvent.FilterEvent.ReallyDeleteItemNoUndo) }) {
         // If we have consumed/spoiled this item
         // We can offer it as 're-add'
         if ((item.isConsumed() || item.isSpoiled()) && canAddAgain) {
-          setAction1("Again") { publish(SearchViewEvent.AnotherOne(item)) }
+          setAction1("Again") { publish(SearchViewEvent.FilterEvent.AnotherOne(item)) }
         }
 
         // Restore the old item
-        setAction2("Undo") { publish(SearchViewEvent.UndoDeleteItem) }
+        setAction2("Undo") { publish(SearchViewEvent.FilterEvent.UndoDeleteItem) }
       }
     }
   }

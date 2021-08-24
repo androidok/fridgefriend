@@ -17,6 +17,7 @@
 package com.pyamsoft.fridge.search
 
 import com.pyamsoft.fridge.db.item.FridgeItem
+import com.pyamsoft.fridge.ui.view.UiToolbar
 import com.pyamsoft.pydroid.arch.UiControllerEvent
 import com.pyamsoft.pydroid.arch.UiViewEvent
 
@@ -27,11 +28,25 @@ sealed class SearchControllerEvent : UiControllerEvent {
 
 sealed class SearchViewEvent : UiViewEvent {
 
-  object ChangeCurrentFilter : SearchViewEvent()
+  sealed class FilterEvent : SearchViewEvent() {
 
-  object UndoDeleteItem : SearchViewEvent()
+    object ChangeCurrentFilter : FilterEvent()
 
-  object ReallyDeleteItemNoUndo : SearchViewEvent()
+    object UndoDeleteItem : FilterEvent()
 
-  data class AnotherOne internal constructor(val item: FridgeItem) : SearchViewEvent()
+    object ReallyDeleteItemNoUndo : FilterEvent()
+
+    data class AnotherOne internal constructor(val item: FridgeItem) : FilterEvent()
+  }
+
+  sealed class ToolbarEvent : SearchViewEvent() {
+
+    data class UpdateSort internal constructor(val type: UiToolbar.SortType) : ToolbarEvent()
+
+    data class TopBarMeasured internal constructor(val height: Int) : ToolbarEvent()
+
+    data class TabSwitched internal constructor(val isHave: Boolean) : ToolbarEvent()
+
+    data class Search internal constructor(val query: String) : ToolbarEvent()
+  }
 }

@@ -24,7 +24,6 @@ import androidx.annotation.CheckResult
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.pyamsoft.fridge.FridgeComponent
-import com.pyamsoft.fridge.core.FridgeViewModelFactory
 import com.pyamsoft.fridge.db.entry.FridgeEntry
 import com.pyamsoft.fridge.db.item.FridgeItem
 import com.pyamsoft.fridge.detail.DetailViewEvent
@@ -56,6 +55,13 @@ internal class SearchFragment : Fragment() {
   @JvmField @Inject internal var filterViewFactory: SearchFilterViewModel.Factory? = null
   private val filterViewModel by viewModels<SearchFilterViewModel> {
     filterViewFactory.requireNotNull().asFactory(this)
+  }
+
+  @JvmField @Inject internal var toolbar: SearchToolbar? = null
+
+  @JvmField @Inject internal var toolbarFactory: SearchToolbarViewModel.Factory? = null
+  private val toolbarViewModel by viewModels<SearchToolbarViewModel> {
+    toolbarFactory.requireNotNull().asFactory(this)
   }
 
   private var stateSaver: StateSaver? = null
@@ -129,10 +135,30 @@ internal class SearchFragment : Fragment() {
             controller = emptyController(),
             requireNotNull(filter)) {
           return@createComponent when (it) {
-            is SearchViewEvent.AnotherOne -> filterViewModel.handleAddAgain(it.item)
-            is SearchViewEvent.ChangeCurrentFilter -> filterViewModel.handleUpdateShowing()
-            is SearchViewEvent.ReallyDeleteItemNoUndo -> filterViewModel.handleDeleteForever()
-            is SearchViewEvent.UndoDeleteItem -> filterViewModel.handleUndoDelete()
+            is SearchViewEvent.FilterEvent.AnotherOne -> filterViewModel.handleAddAgain(it.item)
+            is SearchViewEvent.FilterEvent.ChangeCurrentFilter ->
+                filterViewModel.handleUpdateShowing()
+            is SearchViewEvent.FilterEvent.ReallyDeleteItemNoUndo ->
+                filterViewModel.handleDeleteForever()
+            is SearchViewEvent.FilterEvent.UndoDeleteItem -> filterViewModel.handleUndoDelete()
+          }
+        }
+
+    val toolbarSaver =
+        createComponent(
+            savedInstanceState,
+            viewLifecycleOwner,
+            toolbarViewModel,
+            controller = newUiController {},
+            toolbar.requireNotNull(),
+        ) {
+          return@createComponent when (it) {
+            is SearchViewEvent.ToolbarEvent.UpdateSort -> toolbarViewModel.handleSort(it.type)
+            is SearchViewEvent.ToolbarEvent.TopBarMeasured ->
+                toolbarViewModel.handleTopBarMeasured(it.height)
+            is SearchViewEvent.ToolbarEvent.TabSwitched ->
+                toolbarViewModel.handleTabsSwitched(it.isHave)
+            is SearchViewEvent.ToolbarEvent.Search -> toolbarViewModel.handleSearch(it.query)
           }
         }
 
@@ -143,6 +169,7 @@ internal class SearchFragment : Fragment() {
               arrayOf(
                   listSaver,
                   filterSaver,
+                  toolbarSaver,
               )
 
           override fun saveState(outState: Bundle) {
@@ -165,9 +192,11 @@ internal class SearchFragment : Fragment() {
 
     filterViewFactory = null
     listViewFactory = null
+    toolbarFactory = null
 
     filter = null
     container = null
+    toolbar = null
 
     stateSaver = null
   }

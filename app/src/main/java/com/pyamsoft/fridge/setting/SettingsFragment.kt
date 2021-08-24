@@ -30,10 +30,9 @@ import com.pyamsoft.pydroid.arch.UnitControllerEvent
 import com.pyamsoft.pydroid.arch.createComponent
 import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
-import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.ui.settings.AppSettingsFragment
 import com.pyamsoft.pydroid.ui.settings.AppSettingsPreferenceFragment
-import com.pyamsoft.pydroid.ui.util.applyAppBarOffset
+import com.pyamsoft.pydroid.ui.util.applyToolbarOffset
 import com.pyamsoft.pydroid.util.doOnDestroy
 import javax.inject.Inject
 
@@ -41,9 +40,7 @@ internal class SettingsFragment : AppSettingsFragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    view.applyAppBarOffset(requireAppBarActivity()).also {
-      viewLifecycleOwner.doOnDestroy { it.cancel() }
-    }
+    view.applyToolbarOffset().also { viewLifecycleOwner.doOnDestroy { it.cancel() } }
   }
 
   override fun provideSettingsFragment(): AppSettingsPreferenceFragment {

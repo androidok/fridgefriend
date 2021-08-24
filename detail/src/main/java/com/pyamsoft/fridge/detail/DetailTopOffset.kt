@@ -16,4 +16,4 @@
 
 package com.pyamsoft.fridge.detail
 
-data class DetailTopOffset internal constructor(val height: Int)
+data class DetailTopOffset(val height: Int)

@@ -21,16 +21,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.CheckResult
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.pyamsoft.fridge.FridgeComponent
 import com.pyamsoft.fridge.core.FridgeViewModelFactory
 import com.pyamsoft.fridge.db.entry.FridgeEntry
 import com.pyamsoft.fridge.db.item.FridgeItem
-import com.pyamsoft.fridge.detail.DetailList
-import com.pyamsoft.fridge.detail.DetailPresenceSwitcher
-import com.pyamsoft.fridge.detail.DetailSwitcherViewModel
 import com.pyamsoft.fridge.detail.DetailViewEvent
 import com.pyamsoft.fridge.detail.expand.ExpandedItemDialog
 import com.pyamsoft.pydroid.arch.StateSaver
@@ -42,8 +38,6 @@ import com.pyamsoft.pydroid.arch.newUiController
 import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R as R2
-import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
-import com.pyamsoft.pydroid.ui.app.requireToolbarActivity
 import com.pyamsoft.pydroid.ui.databinding.LayoutCoordinatorBinding
 import com.pyamsoft.pydroid.ui.util.show
 import javax.inject.Inject
@@ -52,24 +46,7 @@ internal class SearchFragment : Fragment() {
 
   @JvmField @Inject internal var container: SearchContainer? = null
 
-  @JvmField @Inject internal var nestedEmptyState: SearchEmptyState? = null
-
-  @JvmField @Inject internal var nestedList: DetailList? = null
-
-  @JvmField @Inject internal var spacer: SearchAppbarSpacer? = null
-
-  @JvmField @Inject internal var search: SearchBarView? = null
-
   @JvmField @Inject internal var filter: SearchFilter? = null
-
-  @JvmField @Inject internal var switcher: DetailPresenceSwitcher? = null
-
-  @JvmField @Inject internal var toolbar: SearchToolbar? = null
-
-  @JvmField @Inject internal var factory: FridgeViewModelFactory? = null
-  private val appBarViewModel by viewModels<DetailSwitcherViewModel> {
-    factory.requireNotNull().create(this)
-  }
 
   @JvmField @Inject internal var listViewFactory: SearchListViewModel.Factory? = null
   private val listViewModel by viewModels<SearchListViewModel> {
@@ -79,16 +56,6 @@ internal class SearchFragment : Fragment() {
   @JvmField @Inject internal var filterViewFactory: SearchFilterViewModel.Factory? = null
   private val filterViewModel by viewModels<SearchFilterViewModel> {
     filterViewFactory.requireNotNull().asFactory(this)
-  }
-
-  @JvmField @Inject internal var searchFactory: SearchViewModel.Factory? = null
-  private val viewModel by viewModels<SearchViewModel> {
-    searchFactory.requireNotNull().asFactory(this)
-  }
-
-  @JvmField @Inject internal var toolbarFactory: SearchToolbarViewModel.Factory? = null
-  private val toolbarViewModel by viewModels<SearchToolbarViewModel> {
-    toolbarFactory.requireNotNull().asFactory(this)
   }
 
   private var stateSaver: StateSaver? = null
@@ -116,8 +83,6 @@ internal class SearchFragment : Fragment() {
         .plusSearchComponent()
         .create(
             this,
-            requireAppBarActivity(),
-            requireToolbarActivity(),
             requireActivity(),
             viewLifecycleOwner,
             entryId,
@@ -126,49 +91,6 @@ internal class SearchFragment : Fragment() {
         .plusSearchComponent()
         .create(binding.layoutCoordinator)
         .inject(this)
-
-    val nestedList = requireNotNull(nestedList)
-    val nestedEmptyState = requireNotNull(nestedEmptyState)
-    val container = requireNotNull(container)
-    container.nest(nestedEmptyState, nestedList)
-
-    val searchSaver =
-        createComponent(
-            savedInstanceState,
-            viewLifecycleOwner,
-            viewModel,
-            controller = emptyController(),
-            requireNotNull(search)) {
-          return@createComponent when (it) {
-            is DetailViewEvent.ToolbarEvent.Search.Query -> viewModel.handleUpdateSearch(it.search)
-          }
-        }
-
-    val toolbarSaver =
-        createComponent(
-            savedInstanceState,
-            viewLifecycleOwner,
-            toolbarViewModel,
-            controller = newUiController {},
-            toolbar.requireNotNull(),
-        ) {
-          return@createComponent when (it) {
-            is SearchToolbarViewEvent.ChangeSort -> toolbarViewModel.handleUpdateSort(it.sort)
-          }
-        }
-
-    val appBarSaver =
-        createComponent(
-            savedInstanceState,
-            viewLifecycleOwner,
-            appBarViewModel,
-            controller = emptyController(),
-            requireNotNull(switcher)) {
-          return@createComponent when (it) {
-            is DetailViewEvent.SwitcherEvent.PresenceSwitched ->
-                appBarViewModel.handlePresenceSwitch(it.presence)
-          }
-        }
 
     val listSaver =
         createComponent(
@@ -181,8 +103,7 @@ internal class SearchFragment : Fragment() {
                     is SearchControllerEvent.ExpandItem -> openExisting(it.item)
                   }
                 },
-            requireNotNull(spacer),
-            container,
+            container.requireNotNull(),
         ) {
           return@createComponent when (it) {
             is DetailViewEvent.ListEvent.ChangeItemPresence ->
@@ -220,10 +141,7 @@ internal class SearchFragment : Fragment() {
 
           private val savers =
               arrayOf(
-                  toolbarSaver,
                   listSaver,
-                  appBarSaver,
-                  searchSaver,
                   filterSaver,
               )
 
@@ -235,26 +153,6 @@ internal class SearchFragment : Fragment() {
             savers.forEach { it.saveState(outState) }
           }
         }
-
-    container.layout {
-      nestedEmptyState.let {
-        connect(it.id(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
-        connect(it.id(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
-        connect(it.id(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
-        connect(it.id(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        constrainWidth(it.id(), ConstraintSet.MATCH_CONSTRAINT)
-        constrainHeight(it.id(), ConstraintSet.MATCH_CONSTRAINT)
-      }
-
-      nestedList.let {
-        connect(it.id(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
-        connect(it.id(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
-        connect(it.id(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
-        connect(it.id(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        constrainWidth(it.id(), ConstraintSet.MATCH_CONSTRAINT)
-        constrainHeight(it.id(), ConstraintSet.MATCH_CONSTRAINT)
-      }
-    }
   }
 
   override fun onSaveInstanceState(outState: Bundle) {
@@ -265,21 +163,11 @@ internal class SearchFragment : Fragment() {
   override fun onDestroyView() {
     super.onDestroyView()
 
-    factory = null
     filterViewFactory = null
     listViewFactory = null
-    searchFactory = null
-    toolbarFactory = null
 
     filter = null
     container = null
-    switcher = null
-    search = null
-    spacer = null
-    toolbar = null
-
-    nestedList = null
-    nestedEmptyState = null
 
     stateSaver = null
   }

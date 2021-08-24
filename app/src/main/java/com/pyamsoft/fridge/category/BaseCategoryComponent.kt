@@ -21,7 +21,6 @@ import androidx.annotation.CheckResult
 import androidx.lifecycle.LifecycleOwner
 import com.pyamsoft.fridge.category.item.CategoryItemComponent
 import com.pyamsoft.fridge.ui.ThemeProviderModule
-import com.pyamsoft.pydroid.ui.app.AppBarActivity
 import dagger.BindsInstance
 import dagger.Subcomponent
 
@@ -44,7 +43,6 @@ internal interface BaseCategoryComponent {
 
     @CheckResult
     fun create(
-        @BindsInstance appBarActivity: AppBarActivity,
         @BindsInstance activity: Activity,
         @BindsInstance owner: LifecycleOwner
     ): BaseCategoryComponent

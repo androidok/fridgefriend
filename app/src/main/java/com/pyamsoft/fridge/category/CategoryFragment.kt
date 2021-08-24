@@ -32,15 +32,12 @@ import com.pyamsoft.pydroid.arch.createComponent
 import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R as R2
-import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.ui.databinding.LayoutCoordinatorBinding
 import javax.inject.Inject
 
 internal class CategoryFragment : Fragment(), UiController<UnitControllerEvent> {
 
   @JvmField @Inject internal var list: CategoryListView? = null
-
-  @JvmField @Inject internal var heroImage: CategoryHeroImage? = null
 
   @JvmField @Inject internal var factory: FridgeViewModelFactory? = null
   private val viewModel by activityViewModels<CategoryViewModel> {
@@ -67,7 +64,6 @@ internal class CategoryFragment : Fragment(), UiController<UnitControllerEvent> 
     Injector.obtainFromApplication<FridgeComponent>(view.context)
         .plusCategoryComponent()
         .create(
-            requireAppBarActivity(),
             requireActivity(),
             viewLifecycleOwner,
         )
@@ -81,8 +77,8 @@ internal class CategoryFragment : Fragment(), UiController<UnitControllerEvent> 
             viewLifecycleOwner,
             viewModel,
             this,
-            requireNotNull(heroImage),
-            requireNotNull(list)) {}
+            requireNotNull(list),
+        ) {}
   }
 
   override fun onControllerEvent(event: UnitControllerEvent) {}

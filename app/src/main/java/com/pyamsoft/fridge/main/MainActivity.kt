@@ -27,7 +27,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.appbar.AppBarLayout
 import com.pyamsoft.fridge.BuildConfig
 import com.pyamsoft.fridge.FridgeComponent
 import com.pyamsoft.fridge.R
@@ -49,8 +48,6 @@ import com.pyamsoft.pydroid.arch.createComponent
 import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.notify.toNotifyId
-import com.pyamsoft.pydroid.ui.app.AppBarActivity
-import com.pyamsoft.pydroid.ui.app.AppBarActivityProvider
 import com.pyamsoft.pydroid.ui.changelog.ChangeLogActivity
 import com.pyamsoft.pydroid.ui.changelog.buildChangeLog
 import com.pyamsoft.pydroid.ui.databinding.LayoutCoordinatorBinding
@@ -64,11 +61,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 internal class MainActivity :
-    ChangeLogActivity(),
-    VersionChecker,
-    AppBarActivity,
-    AppBarActivityProvider,
-    UiController<MainControllerEvent> {
+    ChangeLogActivity(), VersionChecker, UiController<MainControllerEvent> {
 
   private var isUpdateChecked = false
 
@@ -117,8 +110,6 @@ internal class MainActivity :
 
   @JvmField @Inject internal var notificationHandler: NotificationHandler? = null
 
-  @JvmField @Inject internal var toolbar: MainToolbar? = null
-
   @JvmField @Inject internal var navigation: MainNavigation? = null
 
   @JvmField @Inject internal var container: MainContainer? = null
@@ -130,20 +121,6 @@ internal class MainActivity :
 
   private val handler = Handler(Looper.getMainLooper())
 
-  private var capturedAppBar: AppBarLayout? = null
-
-  override fun setAppBar(bar: AppBarLayout?) {
-    capturedAppBar = bar
-  }
-
-  override fun requireAppBar(func: (AppBarLayout) -> Unit) {
-    requireNotNull(capturedAppBar).let(func)
-  }
-
-  override fun withAppBar(func: (AppBarLayout) -> Unit) {
-    capturedAppBar?.let(func)
-  }
-
   override fun onCreate(savedInstanceState: Bundle?) {
     setTheme(R.style.Theme_Fridge)
     super.onCreate(savedInstanceState)
@@ -152,7 +129,12 @@ internal class MainActivity :
 
     Injector.obtainFromApplication<FridgeComponent>(this)
         .plusMainComponent()
-        .create(this, this, this, binding.layoutCoordinator, this, this)
+        .create(
+            this,
+            this,
+            this,
+            binding.layoutCoordinator,
+        )
         .inject(this)
 
     stableLayoutHideNavigation()
@@ -281,14 +263,17 @@ internal class MainActivity :
   private fun inflateComponents(
       savedInstanceState: Bundle?,
   ) {
-    val container = requireNotNull(container)
-    val toolbar = requireNotNull(toolbar)
-    val navigation = requireNotNull(navigation)
-    val snackbar = requireNotNull(snackbar)
 
     stateSaver =
         createComponent(
-            savedInstanceState, this, viewModel, this, container, toolbar, navigation, snackbar) {
+            savedInstanceState,
+            this,
+            viewModel,
+            this,
+            container.requireNotNull(),
+            navigation.requireNotNull(),
+            snackbar.requireNotNull(),
+        ) {
           return@createComponent when (it) {
             is MainViewEvent.BottomBarMeasured -> viewModel.handleConsumeBottomBarHeight(it.height)
             is MainViewEvent.OpenCategory ->
@@ -435,14 +420,11 @@ internal class MainActivity :
     super.onDestroy()
     stateSaver = null
 
-    toolbar = null
     container = null
     navigation = null
     snackbar = null
 
     factory = null
-
-    capturedAppBar = null
 
     handler.removeCallbacksAndMessages(null)
   }

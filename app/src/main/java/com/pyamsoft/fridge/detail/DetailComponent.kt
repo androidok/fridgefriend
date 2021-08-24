@@ -18,23 +18,12 @@ package com.pyamsoft.fridge.detail
 
 import android.view.ViewGroup
 import androidx.annotation.CheckResult
-import androidx.lifecycle.ViewModel
 import com.pyamsoft.fridge.core.FragmentScope
-import com.pyamsoft.fridge.core.ViewModelFactoryModule
-import dagger.Binds
 import dagger.BindsInstance
-import dagger.Module
 import dagger.Subcomponent
-import dagger.multibindings.ClassKey
-import dagger.multibindings.IntoMap
 
 @FragmentScope
-@Subcomponent(
-    modules =
-        [
-            DetailComponent.ComponentModule::class,
-            ViewModelFactoryModule::class,
-        ])
+@Subcomponent
 internal interface DetailComponent {
 
   fun inject(fragment: DetailFragment)
@@ -46,14 +35,5 @@ internal interface DetailComponent {
     fun create(
         @BindsInstance parent: ViewGroup,
     ): DetailComponent
-  }
-
-  @Module
-  abstract class ComponentModule {
-
-    @Binds
-    @IntoMap
-    @ClassKey(DetailSwitcherViewModel::class)
-    internal abstract fun bindAppBarViewModel(impl: DetailSwitcherViewModel): ViewModel
   }
 }

@@ -37,6 +37,8 @@ import javax.inject.Inject
 class DetailContainer
 @Inject
 internal constructor(
+    emptyState: DetailEmptyState,
+    list: DetailList,
     private val theming: ThemeProvider,
     parent: ViewGroup,
 ) : BaseUiView<DetailViewState, DetailViewEvent.ListEvent, DetailContainerBinding>(parent) {
@@ -48,6 +50,8 @@ internal constructor(
   private var animator: ViewPropertyAnimatorCompat? = null
 
   init {
+    nest(emptyState, list)
+
     doOnTeardown {
       animator?.cancel()
       animator = null
@@ -78,10 +82,28 @@ internal constructor(
         animator = animatePopInFromBottom(layoutRoot)
       }
     }
-  }
 
-  fun layout(func: ConstraintSet.() -> Unit) {
-    return binding.detailContainer.layout(func)
+    doOnInflate {
+      binding.detailContainer.layout {
+        emptyState.let {
+          connect(it.id(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+          connect(it.id(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+          connect(it.id(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+          connect(it.id(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+          constrainWidth(it.id(), ConstraintSet.MATCH_CONSTRAINT)
+          constrainHeight(it.id(), ConstraintSet.MATCH_CONSTRAINT)
+        }
+
+        list.let {
+          connect(it.id(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+          connect(it.id(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+          connect(it.id(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+          connect(it.id(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+          constrainWidth(it.id(), ConstraintSet.MATCH_CONSTRAINT)
+          constrainHeight(it.id(), ConstraintSet.MATCH_CONSTRAINT)
+        }
+      }
+    }
   }
 
   override fun onRender(state: UiRender<DetailViewState>) {

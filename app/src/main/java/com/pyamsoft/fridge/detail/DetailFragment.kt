@@ -21,13 +21,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.CheckResult
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.pyamsoft.fridge.FridgeComponent
-import com.pyamsoft.fridge.core.FridgeViewModelFactory
 import com.pyamsoft.fridge.core.R
 import com.pyamsoft.fridge.db.entry.FridgeEntry
 import com.pyamsoft.fridge.db.item.FridgeItem
@@ -38,13 +36,10 @@ import com.pyamsoft.pydroid.arch.StateSaver
 import com.pyamsoft.pydroid.arch.UiSavedStateWriter
 import com.pyamsoft.pydroid.arch.asFactory
 import com.pyamsoft.pydroid.arch.createComponent
-import com.pyamsoft.pydroid.arch.emptyController
 import com.pyamsoft.pydroid.arch.newUiController
 import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R as R2
-import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
-import com.pyamsoft.pydroid.ui.app.requireToolbarActivity
 import com.pyamsoft.pydroid.ui.databinding.LayoutCoordinatorBinding
 import com.pyamsoft.pydroid.ui.util.show
 import javax.inject.Inject
@@ -55,18 +50,6 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
 
   @JvmField @Inject internal var addNew: DetailAddItemView? = null
 
-  @JvmField @Inject internal var heroImage: DetailHeroImage? = null
-
-  @JvmField @Inject internal var toolbar: DetailToolbar? = null
-
-  // Nested in container
-  @JvmField @Inject internal var nestedEmptyState: DetailEmptyState? = null
-
-  // Nested in container
-  @JvmField @Inject internal var nestedList: DetailList? = null
-
-  @JvmField @Inject internal var switcher: DetailPresenceSwitcher? = null
-
   @JvmField @Inject internal var listFactory: DetailListViewModel.Factory? = null
   private val listViewModel by viewModels<DetailListViewModel> {
     listFactory.requireNotNull().asFactory(this)
@@ -75,16 +58,6 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
   @JvmField @Inject internal var addFactory: DetailAddViewModel.Factory? = null
   private val addViewModel by viewModels<DetailAddViewModel> {
     addFactory.requireNotNull().asFactory(this)
-  }
-
-  @JvmField @Inject internal var switcherFactory: FridgeViewModelFactory? = null
-  private val switcherViewModel by viewModels<DetailSwitcherViewModel> {
-    switcherFactory.requireNotNull().create(this)
-  }
-
-  @JvmField @Inject internal var toolbarFactory: DetailToolbarViewModel.Factory? = null
-  private val toolbarViewModel by viewModels<DetailToolbarViewModel> {
-    toolbarFactory.requireNotNull().asFactory(this)
   }
 
   private var stateSaver: StateSaver? = null
@@ -114,8 +87,6 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
         .plusDetailComponent()
         .create(
             this,
-            requireToolbarActivity(),
-            requireAppBarActivity(),
             requireActivity(),
             viewLifecycleOwner,
             entryId,
@@ -124,11 +95,6 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
         .plusDetailComponent()
         .create(binding.layoutCoordinator)
         .inject(this)
-
-    val container = requireNotNull(container)
-    val nestedEmptyState = requireNotNull(nestedEmptyState)
-    val nestedList = requireNotNull(nestedList)
-    container.nest(nestedEmptyState, nestedList)
 
     val listSaver =
         createComponent(
@@ -141,8 +107,7 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
                     is DetailControllerEvent.ListEvent.ExpandItem -> openExisting(it.item)
                   }
                 },
-            requireNotNull(heroImage),
-            container,
+            container.requireNotNull(),
         ) {
           return@createComponent when (it) {
             is DetailViewEvent.ListEvent.ChangeItemPresence ->
@@ -184,43 +149,12 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
           }
         }
 
-    val switcherSaver =
-        createComponent(
-            savedInstanceState,
-            viewLifecycleOwner,
-            switcherViewModel,
-            controller = emptyController(),
-            requireNotNull(switcher)) {
-          return@createComponent when (it) {
-            is DetailViewEvent.SwitcherEvent.PresenceSwitched ->
-                switcherViewModel.handlePresenceSwitch(it.presence)
-          }
-        }
-
-    val toolbarSaver =
-        createComponent(
-            savedInstanceState,
-            viewLifecycleOwner,
-            toolbarViewModel,
-            controller = emptyController(),
-            requireNotNull(toolbar)) {
-          return@createComponent when (it) {
-            is DetailViewEvent.ToolbarEvent.Toolbar.Back -> close()
-            is DetailViewEvent.ToolbarEvent.Search.Query ->
-                toolbarViewModel.handleUpdateSearch(it.search)
-            is DetailViewEvent.ToolbarEvent.Toolbar.ChangeSort ->
-                toolbarViewModel.handleUpdateSort(it.sort)
-          }
-        }
-
     stateSaver =
         object : StateSaver {
 
           private val savers =
               arrayOf(
                   listSaver,
-                  switcherSaver,
-                  toolbarSaver,
                   addSaver,
               )
 
@@ -232,26 +166,6 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
             savers.forEach { it.saveState(outState) }
           }
         }
-
-    container.layout {
-      nestedEmptyState.let {
-        connect(it.id(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
-        connect(it.id(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
-        connect(it.id(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
-        connect(it.id(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        constrainWidth(it.id(), ConstraintSet.MATCH_CONSTRAINT)
-        constrainHeight(it.id(), ConstraintSet.MATCH_CONSTRAINT)
-      }
-
-      nestedList.let {
-        connect(it.id(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
-        connect(it.id(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
-        connect(it.id(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
-        connect(it.id(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        constrainWidth(it.id(), ConstraintSet.MATCH_CONSTRAINT)
-        constrainHeight(it.id(), ConstraintSet.MATCH_CONSTRAINT)
-      }
-    }
   }
 
   override fun container(): CoordinatorLayout? {
@@ -268,22 +182,11 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
 
     addFactory = null
     listFactory = null
-    switcherFactory = null
-    toolbarFactory = null
 
-    heroImage = null
     container = null
-    nestedList = null
-    nestedEmptyState = null
     addNew = null
-    toolbar = null
-    switcher = null
 
     stateSaver = null
-  }
-
-  private fun close() {
-    requireActivity().onBackPressed()
   }
 
   private fun createItem(entryId: FridgeEntry.Id, presence: Presence) {

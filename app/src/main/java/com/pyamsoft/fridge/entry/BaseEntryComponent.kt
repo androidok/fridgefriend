@@ -42,8 +42,6 @@ internal interface BaseEntryComponent {
 
     @CheckResult
     fun create(
-        @BindsInstance appBarActivity: AppBarActivity,
-        @BindsInstance toolbarActivity: ToolbarActivity,
         @BindsInstance activity: Activity,
         @BindsInstance owner: LifecycleOwner,
     ): BaseEntryComponent

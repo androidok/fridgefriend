@@ -24,7 +24,6 @@ import android.view.ViewOutlineProvider
 import androidx.annotation.CheckResult
 import androidx.core.view.ViewPropertyAnimatorCompat
 import androidx.core.view.updatePadding
-import androidx.lifecycle.LifecycleOwner
 import com.pyamsoft.fridge.main.databinding.MainNavigationBinding
 import com.pyamsoft.fridge.ui.animatePopInFromBottom
 import com.pyamsoft.fridge.ui.createRoundedBackground
@@ -35,12 +34,8 @@ import com.pyamsoft.pydroid.util.doOnApplyWindowInsets
 import javax.inject.Inject
 import timber.log.Timber
 
-class MainNavigation
-@Inject
-internal constructor(
-    owner: LifecycleOwner,
-    parent: ViewGroup,
-) : BaseUiView<MainViewState, MainViewEvent, MainNavigationBinding>(parent) {
+class MainNavigation @Inject internal constructor(parent: ViewGroup) :
+    BaseUiView<MainViewState, MainViewEvent, MainNavigationBinding>(parent) {
 
   override val viewBinding = MainNavigationBinding::inflate
 
@@ -63,23 +58,25 @@ internal constructor(
     }
 
     doOnInflate {
-      layoutRoot.doOnApplyWindowInsets(owner) { view, _, _ ->
-        // Set padding to all zero otherwise the bottom bar gets too puffy when nav buttons are
-        // enabled
-        view.updatePadding(left = 0, right = 0, top = 0, bottom = 0)
+      layoutRoot
+          .doOnApplyWindowInsets { view, _, _ ->
+            // Set padding to all zero otherwise the bottom bar gets too puffy when nav buttons are
+            // enabled
+            view.updatePadding(left = 0, right = 0, top = 0, bottom = 0)
 
-        // Make sure we are laid out before grabbing the height
-        view.post {
-          // Publish the measured height
-          publish(MainViewEvent.BottomBarMeasured(view.height))
-        }
-      }
+            // Make sure we are laid out before grabbing the height
+            view.post {
+              // Publish the measured height
+              publish(MainViewEvent.BottomBarMeasured(view.height))
+            }
+          }
+          .also { doOnTeardown { it.cancel() } }
     }
 
     doOnInflate {
-      binding.mainBottomNavigationMenu.setOnNavigationItemSelectedListener { item ->
+      binding.mainBottomNavigationMenu.setOnItemSelectedListener { item ->
         Timber.d("Click nav item: $item")
-        return@setOnNavigationItemSelectedListener when (item.itemId) {
+        return@setOnItemSelectedListener when (item.itemId) {
           R.id.menu_item_nav_entries -> select(MainViewEvent.OpenEntries)
           R.id.menu_item_nav_category -> select(MainViewEvent.OpenCategory)
           R.id.menu_item_nav_settings -> select(MainViewEvent.OpenSettings)
@@ -90,7 +87,7 @@ internal constructor(
     }
 
     doOnTeardown {
-      binding.mainBottomNavigationMenu.setOnNavigationItemSelectedListener(null)
+      binding.mainBottomNavigationMenu.setOnItemSelectedListener(null)
       binding.mainBottomNavigationMenu.removeBadge(R.id.menu_item_nav_entries)
     }
 

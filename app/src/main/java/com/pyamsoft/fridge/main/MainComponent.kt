@@ -22,8 +22,6 @@ import androidx.annotation.CheckResult
 import androidx.lifecycle.LifecycleOwner
 import androidx.savedstate.SavedStateRegistryOwner
 import com.pyamsoft.fridge.ui.ThemeProviderModule
-import com.pyamsoft.pydroid.ui.app.AppBarActivityProvider
-import com.pyamsoft.pydroid.ui.app.ToolbarActivityProvider
 import dagger.BindsInstance
 import dagger.Subcomponent
 
@@ -41,8 +39,6 @@ internal interface MainComponent {
         @BindsInstance activity: Activity,
         @BindsInstance owner: LifecycleOwner,
         @BindsInstance parent: ViewGroup,
-        @BindsInstance toolbarProvider: ToolbarActivityProvider,
-        @BindsInstance appBarProvider: AppBarActivityProvider,
     ): MainComponent
   }
 }

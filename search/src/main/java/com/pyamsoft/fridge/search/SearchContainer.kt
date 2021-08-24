@@ -19,6 +19,7 @@ package com.pyamsoft.fridge.search
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.updatePadding
+import com.pyamsoft.fridge.detail.DetailList
 import com.pyamsoft.fridge.detail.DetailViewEvent
 import com.pyamsoft.fridge.detail.DetailViewState
 import com.pyamsoft.fridge.search.databinding.SearchContainerBinding
@@ -30,6 +31,8 @@ import javax.inject.Inject
 class SearchContainer
 @Inject
 internal constructor(
+    emptyState: SearchEmptyState,
+    list: DetailList,
     parent: ViewGroup,
 ) : BaseUiView<DetailViewState, DetailViewEvent.ListEvent, SearchContainerBinding>(parent) {
 
@@ -37,8 +40,30 @@ internal constructor(
 
   override val layoutRoot by boundView { searchContainer }
 
-  fun layout(func: ConstraintSet.() -> Unit) {
-    return binding.searchContainer.layout(func)
+  init {
+    nest(emptyState, list)
+
+    doOnInflate {
+      binding.searchContainer.layout {
+        emptyState.let {
+          connect(it.id(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+          connect(it.id(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+          connect(it.id(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+          connect(it.id(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+          constrainWidth(it.id(), ConstraintSet.MATCH_CONSTRAINT)
+          constrainHeight(it.id(), ConstraintSet.MATCH_CONSTRAINT)
+        }
+
+        list.let {
+          connect(it.id(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+          connect(it.id(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+          connect(it.id(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+          connect(it.id(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+          constrainWidth(it.id(), ConstraintSet.MATCH_CONSTRAINT)
+          constrainHeight(it.id(), ConstraintSet.MATCH_CONSTRAINT)
+        }
+      }
+    }
   }
 
   override fun onRender(state: UiRender<DetailViewState>) {

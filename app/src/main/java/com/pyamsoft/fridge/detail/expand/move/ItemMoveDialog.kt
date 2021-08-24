@@ -40,7 +40,6 @@ import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R
 import com.pyamsoft.pydroid.ui.app.makeFullscreen
-import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
 import com.pyamsoft.pydroid.ui.databinding.LayoutConstraintBinding
 import com.pyamsoft.pydroid.ui.util.layout
 import com.pyamsoft.pydroid.ui.widget.shadow.DropshadowView
@@ -79,7 +78,12 @@ internal class ItemMoveDialog : AppCompatDialogFragment() {
     val parent = binding.layoutConstraint
     Injector.obtainFromApplication<FridgeComponent>(view.context)
         .plusItemMoveComponent()
-        .create(requireAppBarActivity(), requireActivity(), viewLifecycleOwner, itemId, entryId)
+        .create(
+            requireActivity(),
+            viewLifecycleOwner,
+            itemId,
+            entryId,
+        )
         .plusItemMoveComponent()
         .create(parent)
         .inject(this)

@@ -24,7 +24,6 @@ import com.pyamsoft.fridge.db.item.FridgeItem
 import com.pyamsoft.fridge.entry.item.EntryItemComponent
 import com.pyamsoft.fridge.tooltip.balloon.TooltipModule
 import com.pyamsoft.fridge.ui.ThemeProviderModule
-import com.pyamsoft.pydroid.ui.app.AppBarActivity
 import dagger.BindsInstance
 import dagger.Subcomponent
 
@@ -48,7 +47,6 @@ internal interface BaseItemMoveComponent {
 
     @CheckResult
     fun create(
-        @BindsInstance appBarActivity: AppBarActivity,
         @BindsInstance activity: Activity,
         @BindsInstance owner: LifecycleOwner,
         @BindsInstance itemId: FridgeItem.Id,

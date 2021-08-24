@@ -41,8 +41,6 @@ import com.pyamsoft.pydroid.arch.createComponent
 import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
 import com.pyamsoft.pydroid.ui.R
-import com.pyamsoft.pydroid.ui.app.requireAppBarActivity
-import com.pyamsoft.pydroid.ui.app.requireToolbarActivity
 import com.pyamsoft.pydroid.ui.databinding.LayoutCoordinatorBinding
 import com.pyamsoft.pydroid.ui.util.commit
 import javax.inject.Inject
@@ -55,11 +53,7 @@ internal class EntryFragment : Fragment(), SnackbarContainer, UiController<Entry
     factory.requireNotNull().create(requireActivity())
   }
 
-  @JvmField @Inject internal var spacer: EntryAppBarSpacer? = null
-
   @JvmField @Inject internal var container: EntryContainer? = null
-
-  @JvmField @Inject internal var toolbar: EntryToolbar? = null
 
   @JvmField @Inject internal var addNew: EntryAddNew? = null
 
@@ -89,8 +83,6 @@ internal class EntryFragment : Fragment(), SnackbarContainer, UiController<Entry
     Injector.obtainFromApplication<FridgeComponent>(view.context)
         .plusEntryComponent()
         .create(
-            requireAppBarActivity(),
-            requireToolbarActivity(),
             requireActivity(),
             viewLifecycleOwner,
         )
@@ -108,9 +100,7 @@ internal class EntryFragment : Fragment(), SnackbarContainer, UiController<Entry
             viewLifecycleOwner,
             viewModel,
             this,
-            requireNotNull(spacer),
             container,
-            requireNotNull(toolbar),
             requireNotNull(addNew),
         ) {
           return@createComponent when (it) {
@@ -177,9 +167,7 @@ internal class EntryFragment : Fragment(), SnackbarContainer, UiController<Entry
     factory = null
 
     container = null
-    toolbar = null
     addNew = null
-    spacer = null
 
     nestedList = null
 

@@ -25,8 +25,6 @@ import com.pyamsoft.fridge.db.item.FridgeItem.Presence
 import com.pyamsoft.fridge.detail.item.DetailItemComponent
 import com.pyamsoft.fridge.tooltip.balloon.TooltipModule
 import com.pyamsoft.fridge.ui.ThemeProviderModule
-import com.pyamsoft.pydroid.ui.app.AppBarActivity
-import com.pyamsoft.pydroid.ui.app.ToolbarActivity
 import dagger.BindsInstance
 import dagger.Subcomponent
 
@@ -51,8 +49,6 @@ internal interface BaseSearchComponent {
     @CheckResult
     fun create(
         @BindsInstance savedStateRegistryOwner: SavedStateRegistryOwner,
-        @BindsInstance appBarActivity: AppBarActivity,
-        @BindsInstance toolbarActivity: ToolbarActivity,
         @BindsInstance activity: Activity,
         @BindsInstance owner: LifecycleOwner,
         @BindsInstance entryId: FridgeEntry.Id,

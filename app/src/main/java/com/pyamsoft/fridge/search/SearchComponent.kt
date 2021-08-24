@@ -19,18 +19,11 @@ package com.pyamsoft.fridge.search
 import android.view.ViewGroup
 import androidx.annotation.CheckResult
 import com.pyamsoft.fridge.core.FragmentScope
-import com.pyamsoft.fridge.core.ViewModelFactoryModule
-import com.pyamsoft.fridge.detail.DetailComponent
 import dagger.BindsInstance
 import dagger.Subcomponent
 
 @FragmentScope
-@Subcomponent(
-    modules =
-        [
-            DetailComponent.ComponentModule::class,
-            ViewModelFactoryModule::class,
-        ])
+@Subcomponent
 internal interface SearchComponent {
 
   fun inject(fragment: SearchFragment)

@@ -41,6 +41,7 @@ import com.pyamsoft.pydroid.arch.UiViewEvent
 import com.pyamsoft.pydroid.arch.UiViewState
 import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.ui.theme.ThemeProvider
+import com.pyamsoft.pydroid.ui.util.doOnLayoutChanged
 import com.pyamsoft.pydroid.util.doOnApplyWindowInsets
 import timber.log.Timber
 
@@ -92,9 +93,8 @@ protected constructor(parent: ViewGroup, theming: ThemeProvider) :
     doOnTeardown { binding.uiToolbarToolbar.teardownMenu() }
 
     doOnInflate {
-      // Don't need doOnLayoutChanged since the size of this doesn't change
-      binding.uiToolbarAppbar.apply {
-        post { publish(provideAppBarHeightMeasureEvent(this.height)) }
+      binding.uiToolbarAppbar.doOnLayoutChanged { v, _, _, _, _, _, _, _, _ ->
+        publish(provideAppBarHeightMeasureEvent(v.height))
       }
     }
 

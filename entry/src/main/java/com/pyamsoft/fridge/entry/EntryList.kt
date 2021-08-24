@@ -31,7 +31,6 @@ import com.pyamsoft.pydroid.loader.ImageLoader
 import com.pyamsoft.pydroid.loader.ImageTarget
 import com.pyamsoft.pydroid.loader.Loaded
 import com.pyamsoft.pydroid.ui.theme.ThemeProvider
-import com.pyamsoft.pydroid.util.asDp
 import com.pyamsoft.pydroid.util.tintWith
 import io.cabriole.decorator.LinearBoundsMarginDecoration
 import javax.inject.Inject
@@ -68,14 +67,6 @@ internal constructor(
     doOnTeardown { clearLoaded() }
 
     doOnTeardown { bottomDecoration = null }
-
-    doOnInflate {
-      // The bottom has additional space to fit the FAB
-      val bottomMargin = (56 + 16).asDp(binding.entryList.context)
-      LinearBoundsMarginDecoration(bottomMargin = bottomMargin).apply {
-        binding.entryList.addItemDecoration(this)
-      }
-    }
   }
 
   private fun clearLoaded() {

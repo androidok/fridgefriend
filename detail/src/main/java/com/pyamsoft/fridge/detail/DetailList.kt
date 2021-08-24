@@ -156,12 +156,6 @@ internal constructor(
       LinearMarginDecoration.create(margin = margin).apply {
         binding.detailList.addItemDecoration(this)
       }
-
-      // The bottom has additional space to fit the FAB
-      val bottomMargin = 56.asDp(binding.detailList.context) + margin
-      LinearBoundsMarginDecoration(bottomMargin = bottomMargin).apply {
-        binding.detailList.addItemDecoration(this)
-      }
     }
 
     doOnTeardown {

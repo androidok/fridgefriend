@@ -64,18 +64,14 @@ internal constructor(
 
     doOnInflate {
       layoutRoot.doOnApplyWindowInsets(owner) { view, _, _ ->
+        // Set padding to all zero otherwise the bottom bar gets too puffy when nav buttons are
+        // enabled
+        view.updatePadding(left = 0, right = 0, top = 0, bottom = 0)
 
-        // Ensure this happens last
+        // Make sure we are laid out before grabbing the height
         view.post {
-          // Set padding to all zero otherwise the bottom bar gets too puffy when nav buttons are
-          // enabled
-          view.updatePadding(left = 0, right = 0, top = 0, bottom = 0)
-
-          // Make sure we are laid out before grabbing the height
-          view.post {
-            // Publish the measured height
-            publish(MainViewEvent.BottomBarMeasured(view.height))
-          }
+          // Publish the measured height
+          publish(MainViewEvent.BottomBarMeasured(view.height))
         }
       }
     }

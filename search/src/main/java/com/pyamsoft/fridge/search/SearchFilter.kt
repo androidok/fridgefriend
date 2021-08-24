@@ -91,8 +91,7 @@ internal constructor(
   }
 
   private fun handleBottomMargin(height: Int) {
-    // Multiply by 2 to account for the bar offset and the height change in MainContainer
-    layoutRoot.updateLayoutParams<ViewGroup.MarginLayoutParams> { this.bottomMargin = height * 2 }
+    layoutRoot.updateLayoutParams<ViewGroup.MarginLayoutParams> { this.bottomMargin = height }
   }
 
   private fun handleUndo(undoable: DetailViewState.Undoable?) {

@@ -38,11 +38,6 @@ import javax.inject.Inject
 
 internal class SettingsFragment : AppSettingsFragment() {
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    view.applyToolbarOffset().also { viewLifecycleOwner.doOnDestroy { it.cancel() } }
-  }
-
   override fun provideSettingsFragment(): AppSettingsPreferenceFragment {
     return SettingsPreferenceFragment()
   }
@@ -85,9 +80,17 @@ internal class SettingsFragment : AppSettingsFragment() {
 
       stateSaver =
           createComponent(
-              savedInstanceState, viewLifecycleOwner, viewModel, this, requireNotNull(spacer)) {}
+              savedInstanceState,
+              viewLifecycleOwner,
+              viewModel,
+              this,
+              requireNotNull(spacer),
+          ) {}
 
       initializeUpdate()
+
+      // Must be listView here instead of view for scroll to look nice
+      listView.applyToolbarOffset().also { viewLifecycleOwner.doOnDestroy { it.cancel() } }
     }
 
     override fun onControllerEvent(event: UnitControllerEvent) {}

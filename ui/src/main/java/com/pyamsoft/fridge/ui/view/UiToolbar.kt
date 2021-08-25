@@ -21,6 +21,7 @@ import android.view.MenuItem
 import android.view.SubMenu
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewOutlineProvider
 import androidx.annotation.CallSuper
 import androidx.annotation.CheckResult
 import androidx.appcompat.widget.Toolbar
@@ -65,7 +66,9 @@ protected constructor(parent: ViewGroup, theming: ThemeProvider) :
   init {
     doOnInflate {
       binding.uiToolbarAppbar.withRoundedBackground(applyAllCorners = true)
-      binding.uiToolbarAppbar.outlineProvider = null
+
+      binding.uiToolbarAppbar.outlineProvider = ViewOutlineProvider.BACKGROUND
+      binding.uiToolbarToolbar.outlineProvider = null
     }
 
     doOnInflate {

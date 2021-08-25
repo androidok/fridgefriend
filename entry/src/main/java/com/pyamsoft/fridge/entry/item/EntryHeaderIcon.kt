@@ -17,38 +17,29 @@
 package com.pyamsoft.fridge.entry.item
 
 import android.view.ViewGroup
-import com.pyamsoft.fridge.entry.databinding.EntryItemNameBinding
+import com.pyamsoft.fridge.entry.databinding.EntryHeaderIconBinding
 import com.pyamsoft.pydroid.arch.BaseUiView
-import com.pyamsoft.pydroid.arch.UiRender
+import com.pyamsoft.pydroid.loader.ImageLoader
 import javax.inject.Inject
+import javax.inject.Named
 
-class EntryListItemName
+class EntryHeaderIcon
 @Inject
 internal constructor(
+    imageLoader: ImageLoader,
+    @Named("app_icon") appIconRes: Int,
     parent: ViewGroup,
-) : BaseUiView<EntryItemViewState.Item, EntryItemViewEvent, EntryItemNameBinding>(parent) {
+) : BaseUiView<EntryItemViewState.Header, Nothing, EntryHeaderIconBinding>(parent) {
 
-  override val viewBinding = EntryItemNameBinding::inflate
+  override val layoutRoot by boundView { entryHeaderIcon }
 
-  override val layoutRoot by boundView { entryItemName }
+  override val viewBinding = EntryHeaderIconBinding::inflate
 
   init {
-    doOnTeardown { clear() }
-  }
-
-  override fun onRender(state: UiRender<EntryItemViewState.Item>) {
-    state.mapChanged { it.entry }.mapChanged { it.name() }.render(viewScope) { handleName(it) }
-  }
-
-  private fun clear() {
-    binding.entryItemName.text = ""
-  }
-
-  private fun handleName(name: String) {
-    if (name.isBlank()) {
-      clear()
-    } else {
-      binding.entryItemName.text = name
+    doOnInflate {
+      imageLoader.asDrawable().load(appIconRes).into(binding.entryHeaderIcon).also {
+        doOnTeardown { it.dispose() }
+      }
     }
   }
 }

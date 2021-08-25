@@ -18,52 +18,46 @@ package com.pyamsoft.fridge.entry.item
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
-import com.pyamsoft.fridge.entry.EntryListAdapter
-import com.pyamsoft.fridge.entry.databinding.EntryListItemHolderBinding
+import com.pyamsoft.fridge.entry.databinding.EntryHeaderItemHolderBinding
 import com.pyamsoft.pydroid.arch.ViewBinder
 import com.pyamsoft.pydroid.arch.createViewBinder
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.util.doOnDestroy
 import javax.inject.Inject
 
-class EntryItemViewHolder
+class EntryHeaderViewHolder
 internal constructor(
-    binding: EntryListItemHolderBinding,
+    binding: EntryHeaderItemHolderBinding,
     owner: LifecycleOwner,
     factory: EntryItemComponent.Factory,
-    callback: EntryListAdapter.Callback
-) : RecyclerView.ViewHolder(binding.root), ViewBinder<EntryItemViewState.Item> {
+) : RecyclerView.ViewHolder(binding.root), ViewBinder<EntryItemViewState.Header> {
 
-  @Inject @JvmField internal var scrimView: EntryListItemScrim? = null
+  private val viewBinder: ViewBinder<EntryItemViewState.Header>
 
-  @Inject @JvmField internal var nameView: EntryListItemName? = null
+  @Inject @JvmField internal var name: EntryHeaderName? = null
 
-  @Inject @JvmField internal var clickView: EntryListItemClick? = null
-
-  private val viewBinder: ViewBinder<EntryItemViewState.Item>
+  @Inject @JvmField internal var icon: EntryHeaderIcon? = null
 
   init {
-    factory.create(binding.entryListItem).inject(this)
+    factory.create(binding.entryHeaderHolder).inject(this)
 
     viewBinder =
         createViewBinder(
-            requireNotNull(nameView), requireNotNull(scrimView), requireNotNull(clickView)) {
-          return@createViewBinder when (it) {
-            is EntryItemViewEvent.OnClick -> callback.onClick(bindingAdapterPosition)
-            is EntryItemViewEvent.OnLongPress -> callback.onLongPress(bindingAdapterPosition)
-          }
-        }
+            name.requireNotNull(),
+            icon.requireNotNull(),
+        ) {}
 
     owner.doOnDestroy { teardown() }
   }
 
-  override fun bindState(state: EntryItemViewState.Item) {
+  override fun bindState(state: EntryItemViewState.Header) {
     viewBinder.bindState(state)
   }
 
   override fun teardown() {
     viewBinder.teardown()
-    scrimView = null
-    nameView = null
-    clickView = null
+
+    name = null
+    icon = null
   }
 }

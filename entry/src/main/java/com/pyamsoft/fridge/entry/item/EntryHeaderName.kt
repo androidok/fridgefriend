@@ -17,38 +17,25 @@
 package com.pyamsoft.fridge.entry.item
 
 import android.view.ViewGroup
-import com.pyamsoft.fridge.entry.databinding.EntryItemNameBinding
+import com.pyamsoft.fridge.entry.databinding.EntryHeaderNameBinding
 import com.pyamsoft.pydroid.arch.BaseUiView
-import com.pyamsoft.pydroid.arch.UiRender
 import javax.inject.Inject
+import javax.inject.Named
 
-class EntryListItemName
+class EntryHeaderName
 @Inject
 internal constructor(
     parent: ViewGroup,
-) : BaseUiView<EntryItemViewState.Item, EntryItemViewEvent, EntryItemNameBinding>(parent) {
+    @Named("app_name") appNameRes: Int,
+) : BaseUiView<EntryItemViewState.Header, Nothing, EntryHeaderNameBinding>(parent) {
 
-  override val viewBinding = EntryItemNameBinding::inflate
+  override val layoutRoot by boundView { entryHeaderName }
 
-  override val layoutRoot by boundView { entryItemName }
+  override val viewBinding = EntryHeaderNameBinding::inflate
 
   init {
-    doOnTeardown { clear() }
-  }
+    doOnInflate { binding.entryHeaderName.setText(appNameRes) }
 
-  override fun onRender(state: UiRender<EntryItemViewState.Item>) {
-    state.mapChanged { it.entry }.mapChanged { it.name() }.render(viewScope) { handleName(it) }
-  }
-
-  private fun clear() {
-    binding.entryItemName.text = ""
-  }
-
-  private fun handleName(name: String) {
-    if (name.isBlank()) {
-      clear()
-    } else {
-      binding.entryItemName.text = name
-    }
+    doOnTeardown { binding.entryHeaderName.text = "" }
   }
 }

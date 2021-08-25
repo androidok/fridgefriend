@@ -138,8 +138,15 @@ protected constructor(
     return requireNotNull(modelAdapter)
   }
 
-  private fun setList(list: List<EntryViewState.EntryGroup>) {
-    val data = list.map { EntryItemViewState(it.entry, itemCount = it.items.size) }
+  private fun setList(list: List<EntryViewState.EntryItems>) {
+    val data =
+        list.map { item ->
+          when (item) {
+            is EntryViewState.EntryItems.EntryGroup ->
+                EntryItemViewState.Item(entry = item.entry, itemCount = item.items.size)
+            is EntryViewState.EntryItems.Header -> EntryItemViewState.Header
+          }
+        }
     Timber.d("Submit data list: $data")
     usingAdapter().submitList(data)
   }
@@ -152,7 +159,7 @@ protected constructor(
     binding.entrySwipeRefresh.isRefreshing = loading
   }
 
-  private fun handleList(entries: List<EntryViewState.EntryGroup>) {
+  private fun handleList(entries: List<EntryViewState.EntryItems>) {
     when {
       entries.isEmpty() -> clearList()
       else -> setList(entries)

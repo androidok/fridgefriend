@@ -125,6 +125,13 @@ internal constructor(
     }
 
     doOnInflate {
+      // Offset the refresh indicator so it appears where we expect it to on page
+      // start is the "start location"
+      // end is the "pulldown distance"
+      binding.detailSwipeRefresh.setProgressViewOffset(false, 200, 400)
+    }
+
+    doOnInflate {
       binding.detailSwipeRefresh.setOnRefreshListener {
         publish(DetailViewEvent.ListEvent.ForceRefresh)
       }

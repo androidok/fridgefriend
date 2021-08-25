@@ -31,7 +31,7 @@ class EntryListItemScrim
 internal constructor(
     private val imageLoader: ImageLoader,
     parent: ViewGroup,
-) : BaseUiView<EntryItemViewState, EntryItemViewEvent, EntryItemScrimBinding>(parent) {
+) : BaseUiView<EntryItemViewState.Item, EntryItemViewEvent, EntryItemScrimBinding>(parent) {
 
   override val viewBinding = EntryItemScrimBinding::inflate
 
@@ -48,7 +48,7 @@ internal constructor(
     loaded = null
   }
 
-  override fun onRender(state: UiRender<EntryItemViewState>) {
+  override fun onRender(state: UiRender<EntryItemViewState.Item>) {
     state.mapChanged { it.itemCount }.render(viewScope) { handleScrim(it) }
   }
 

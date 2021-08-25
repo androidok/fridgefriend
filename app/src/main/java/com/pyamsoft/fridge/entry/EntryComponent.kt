@@ -24,9 +24,11 @@ import com.pyamsoft.fridge.core.ViewModelFactoryModule
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Module
+import dagger.Provides
 import dagger.Subcomponent
 import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
+import javax.inject.Named
 
 @FragmentScope
 @Subcomponent(
@@ -55,5 +57,17 @@ internal interface EntryComponent {
     @IntoMap
     @ClassKey(EntryViewModel::class)
     internal abstract fun bindViewModel(impl: EntryViewModel): ViewModel
+
+    @Module
+    companion object {
+
+      @Named("entry_show_header")
+      @Provides
+      @JvmStatic
+      @CheckResult
+      internal fun provideShowHeader(): Boolean {
+        return true
+      }
+    }
   }
 }

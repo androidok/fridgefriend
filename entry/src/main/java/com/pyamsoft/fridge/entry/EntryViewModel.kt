@@ -64,8 +64,8 @@ internal constructor(
     delegate.handleDeleteEntry(viewModelScope, index)
   }
 
-  private fun withEntryAt(index: Int, block: (FridgeEntry) -> Unit) {
-    block(state.displayedEntries[index].entry)
+  private inline fun withEntryAt(index: Int, block: (FridgeEntry) -> Unit) {
+    return delegate.withEntryAt(index, block)
   }
 
   fun handleSelect(index: Int) {

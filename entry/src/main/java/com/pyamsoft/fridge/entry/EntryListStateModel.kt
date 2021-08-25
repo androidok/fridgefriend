@@ -33,6 +33,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Named
 
 // Share this single StateModel between the entire fragment scope
 // Used particularly for ItemMove module
@@ -40,6 +41,7 @@ import timber.log.Timber
 class EntryListStateModel
 @Inject
 constructor(
+    @Named("entry_show_header") initialShowHeader: Boolean,
     private val interactor: EntryInteractor,
     private val bottomOffsetBus: EventConsumer<BottomOffset>,
 ) :
@@ -47,22 +49,23 @@ constructor(
         EntryViewState(
             isLoading = false,
             error = null,
-            displayedEntries = emptyList(),
             allEntries = emptyList(),
             search = "",
             bottomOffset = 0,
             undoableEntry = null,
-            sort = EntryViewState.Sorts.CREATED)) {
+            sort = EntryViewState.Sorts.CREATED,
+            showHeader = initialShowHeader,
+        )) {
 
   private val refreshRunner =
-      highlander<ResultWrapper<List<EntryViewState.EntryGroup>>, Boolean> { force ->
+      highlander<ResultWrapper<List<EntryViewState.EntryItems.EntryGroup>>, Boolean> { force ->
         interactor.loadEntries(force).map { entryResult ->
           entryResult.map { entry ->
             interactor
                 .loadItems(force, entry)
                 .onFailure { Timber.e(it, "Failed to load items for entry: $entry") }
                 .recover { emptyList() }
-                .map { EntryViewState.EntryGroup(entry, it) }
+                .map { EntryViewState.EntryItems.EntryGroup(entry, it) }
                 .getOrThrow()
           }
         }
@@ -92,25 +95,15 @@ constructor(
 
   @CheckResult
   private fun EntryViewState.regenerateEntries(
-      entries: List<EntryViewState.EntryGroup>
+      entries: List<EntryViewState.EntryItems.EntryGroup>
   ): EntryViewState {
     val newEntries = prepareListEntries(entries)
-    val visibleEntries = getOnlyVisibleEntries(newEntries, search)
-    return copy(
-        allEntries = newEntries,
-        displayedEntries = visibleEntries,
-    )
+    return copy(allEntries = newEntries)
   }
 
-  @CheckResult
-  private fun EntryViewState.getOnlyVisibleEntries(
-      entries: List<EntryViewState.EntryGroup>,
-      search: String,
-  ): List<EntryViewState.EntryGroup> {
-    return entries.asSequence().filter { it.entry.matchesQuery(search, true) }.toList()
-  }
-
-  private fun CoroutineScope.handleListRefreshed(entries: List<EntryViewState.EntryGroup>) {
+  private fun CoroutineScope.handleListRefreshed(
+      entries: List<EntryViewState.EntryItems.EntryGroup>
+  ) {
     setState { regenerateEntries(entries) }
   }
 
@@ -174,12 +167,13 @@ constructor(
 
   private fun CoroutineScope.handleRealtimeEntryDeleteAll() {
     Timber.d("Realtime DELETE ALL")
-    setState { copy(allEntries = emptyList(), displayedEntries = emptyList()) }
+    setState { copy(allEntries = emptyList()) }
   }
 
   private fun CoroutineScope.handleRealtimeEntryInsert(entry: FridgeEntry) {
     setState {
-      val newEntries = allEntries + EntryViewState.EntryGroup(entry = entry, items = emptyList())
+      val newEntries =
+          allEntries + EntryViewState.EntryItems.EntryGroup(entry = entry, items = emptyList())
       regenerateEntries(newEntries)
     }
   }
@@ -211,10 +205,10 @@ constructor(
 
   @CheckResult
   private fun EntryViewState.prepareListEntries(
-      entries: List<EntryViewState.EntryGroup>,
-  ): List<EntryViewState.EntryGroup> {
+      entries: List<EntryViewState.EntryItems.EntryGroup>,
+  ): List<EntryViewState.EntryItems.EntryGroup> {
     val dateSorter =
-        Comparator<EntryViewState.EntryGroup> { o1, o2 ->
+        Comparator<EntryViewState.EntryItems.EntryGroup> { o1, o2 ->
           when (sort) {
             EntryViewState.Sorts.CREATED -> o1.entry.createdTime().compareTo(o2.entry.createdTime())
             EntryViewState.Sorts.NAME ->
@@ -256,8 +250,15 @@ constructor(
     }
   }
 
-  private inline fun withEntryAt(index: Int, block: (FridgeEntry) -> Unit) {
-    block(state.displayedEntries[index].entry)
+  inline fun withEntryAt(index: Int, block: (FridgeEntry) -> Unit) {
+    return when (val item = state.displayedEntries[index]) {
+      is EntryViewState.EntryItems.EntryGroup -> {
+        block(item.entry)
+      }
+      is EntryViewState.EntryItems.Header -> {
+        Timber.w("Cannot execute code block against header item")
+      }
+    }
   }
 
   internal fun handleDeleteEntry(scope: CoroutineScope, index: Int) {

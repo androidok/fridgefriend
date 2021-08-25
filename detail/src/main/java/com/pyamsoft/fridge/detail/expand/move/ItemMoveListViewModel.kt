@@ -41,8 +41,8 @@ internal constructor(
               state.render(scope) { newState ->
                 scope.setState {
                   newState.copy(
-                      displayedEntries =
-                          newState.displayedEntries.filterNot { it.entry.id() == entryId })
+                      // Filter out ourselves
+                      allEntries = newState.allEntries.filterNot { it.entry.id() == entryId })
                 }
               }
             })
@@ -65,13 +65,12 @@ internal constructor(
   }
 
   private inline fun withEntryAt(index: Int, block: (FridgeEntry) -> Unit) {
-    block(state.displayedEntries[index].entry)
+    return delegate.withEntryAt(index, block)
   }
 
   fun handleSelectEntry(index: Int) {
-    withEntryAt(index) { entry ->
-      Timber.d("Selected entry $entry")
-      publish(ItemMoveListControllerEvent.Selected(entry))
-    }
+    val entry = state.allEntries[index].entry
+    Timber.d("Selected entry $entry")
+    publish(ItemMoveListControllerEvent.Selected(entry))
   }
 }

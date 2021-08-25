@@ -26,6 +26,8 @@ interface EntryItemComponent {
 
   fun inject(holder: EntryItemViewHolder)
 
+  fun inject(holder: EntryHeaderViewHolder)
+
   @Subcomponent.Factory
   interface Factory {
 

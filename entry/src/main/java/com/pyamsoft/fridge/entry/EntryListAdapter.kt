@@ -21,10 +21,14 @@ import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
+import com.pyamsoft.fridge.entry.databinding.EntryHeaderItemHolderBinding
 import com.pyamsoft.fridge.entry.databinding.EntryListItemHolderBinding
+import com.pyamsoft.fridge.entry.item.EntryHeaderViewHolder
 import com.pyamsoft.fridge.entry.item.EntryItemComponent
 import com.pyamsoft.fridge.entry.item.EntryItemViewHolder
 import com.pyamsoft.fridge.entry.item.EntryItemViewState
+import kotlin.random.Random
 import me.zhanghai.android.fastscroll.PopupTextProvider
 
 class EntryListAdapter
@@ -32,30 +36,62 @@ internal constructor(
     private val owner: LifecycleOwner,
     private val factory: EntryItemComponent.Factory,
     private val callback: Callback
-) : ListAdapter<EntryItemViewState, EntryItemViewHolder>(DIFFER), PopupTextProvider {
+) : ListAdapter<EntryItemViewState, RecyclerView.ViewHolder>(DIFFER), PopupTextProvider {
 
   init {
     setHasStableIds(true)
   }
 
   override fun getItemId(position: Int): Long {
-    return getItem(position).entry.id().hashCode().toLong()
+    return when (val item = getItem(position)) {
+      is EntryItemViewState.Header -> HASH_CODE_HEADER
+      is EntryItemViewState.Item -> item.entry.id().hashCode()
+    }.toLong()
   }
 
   override fun getPopupText(position: Int): String {
-    val item = getItem(position)
-    return item.entry.name()
+    return when (val item = getItem(position)) {
+      is EntryItemViewState.Header -> "Top"
+      is EntryItemViewState.Item -> item.entry.name()
+    }
   }
 
-  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EntryItemViewHolder {
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
     val inflater = LayoutInflater.from(parent.context)
-    val binding = EntryListItemHolderBinding.inflate(inflater, parent, false)
-    return EntryItemViewHolder(binding, owner, factory, callback)
+    return when (viewType) {
+      TYPE_HEADER -> {
+        val binding = EntryHeaderItemHolderBinding.inflate(inflater, parent, false)
+        EntryHeaderViewHolder(binding, owner, factory)
+      }
+      TYPE_ITEM -> {
+        val binding = EntryListItemHolderBinding.inflate(inflater, parent, false)
+        EntryItemViewHolder(binding, owner, factory, callback)
+      }
+      else -> throw IllegalStateException("Invalid view type: $viewType")
+    }
   }
 
-  override fun onBindViewHolder(holder: EntryItemViewHolder, position: Int) {
-    val item = getItem(position)
-    holder.bindState(item)
+  override fun getItemViewType(position: Int): Int {
+    return when (getItem(position)) {
+      is EntryItemViewState.Header -> TYPE_HEADER
+      is EntryItemViewState.Item -> TYPE_ITEM
+    }
+  }
+
+  override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    return when (val item = getItem(position)) {
+      is EntryItemViewState.Header -> {
+        val viewHolder = holder as EntryHeaderViewHolder
+        viewHolder.bindState(item)
+      }
+      is EntryItemViewState.Item -> {
+        val viewHolder = holder as EntryItemViewHolder
+        viewHolder.bindState(item)
+      }
+      else ->
+          throw IllegalStateException(
+              "Cannot bind invalid view holder: ${getItemViewType(position)}")
+    }
   }
 
   interface Callback {
@@ -67,6 +103,10 @@ internal constructor(
 
   companion object {
 
+    private const val TYPE_HEADER = 1
+    private const val TYPE_ITEM = 2
+    private val HASH_CODE_HEADER = Random.nextInt()
+
     private val DIFFER =
         object : DiffUtil.ItemCallback<EntryItemViewState>() {
 
@@ -74,14 +114,28 @@ internal constructor(
               oldItem: EntryItemViewState,
               newItem: EntryItemViewState
           ): Boolean {
-            return oldItem.entry.id() == newItem.entry.id()
+            return when (oldItem) {
+              is EntryItemViewState.Header -> newItem is EntryItemViewState.Header
+              is EntryItemViewState.Item ->
+                  when (newItem) {
+                    is EntryItemViewState.Item -> oldItem.entry.id() == newItem.entry.id()
+                    is EntryItemViewState.Header -> false
+                  }
+            }
           }
 
           override fun areContentsTheSame(
               oldItem: EntryItemViewState,
               newItem: EntryItemViewState
           ): Boolean {
-            return oldItem == newItem
+            return when (oldItem) {
+              is EntryItemViewState.Header -> newItem is EntryItemViewState.Header
+              is EntryItemViewState.Item ->
+                  when (newItem) {
+                    is EntryItemViewState.Item -> oldItem == newItem
+                    is EntryItemViewState.Header -> false
+                  }
+            }
           }
         }
   }

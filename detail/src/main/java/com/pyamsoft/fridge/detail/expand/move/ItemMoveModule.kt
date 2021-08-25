@@ -20,6 +20,8 @@ import androidx.annotation.CheckResult
 import com.pyamsoft.fridge.entry.EntryListStateModel
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
+import javax.inject.Named
 import javax.inject.Qualifier
 
 @Qualifier @Retention(AnnotationRetention.BINARY) internal annotation class MoveInternalApi
@@ -32,4 +34,16 @@ abstract class ItemMoveModule {
   @CheckResult
   @MoveInternalApi
   internal abstract fun bindListStateModel(impl: EntryListStateModel): EntryListStateModel
+
+  @Module
+  companion object {
+
+    @Named("entry_show_header")
+    @Provides
+    @JvmStatic
+    @CheckResult
+    internal fun provideShowHeader(): Boolean {
+      return false
+    }
+  }
 }

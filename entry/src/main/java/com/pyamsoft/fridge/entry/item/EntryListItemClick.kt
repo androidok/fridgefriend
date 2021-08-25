@@ -27,7 +27,7 @@ class EntryListItemClick
 @Inject
 internal constructor(
     parent: ViewGroup,
-) : UiView<EntryItemViewState, EntryItemViewEvent>() {
+) : UiView<EntryItemViewState.Item, EntryItemViewEvent>() {
 
   init {
     doOnInflate {
@@ -48,5 +48,5 @@ internal constructor(
     }
   }
 
-  override fun render(state: UiRender<EntryItemViewState>) {}
+  override fun render(state: UiRender<EntryItemViewState.Item>) {}
 }

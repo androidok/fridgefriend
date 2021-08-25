@@ -41,7 +41,12 @@ internal constructor(
     entryId: FridgeEntry.Id,
 ) :
     UiViewModel<ItemMoveViewState, ItemMoveControllerEvent>(
-        initialState = ItemMoveViewState(item = null, listState = delegate.initialState)) {
+        initialState =
+            ItemMoveViewState(
+                item = null,
+                listState = delegate.initialState,
+            ),
+    ) {
 
   private val itemResolveRunner =
       highlander<ResultWrapper<FridgeItem>> { interactor.loadItem(itemId, entryId) }

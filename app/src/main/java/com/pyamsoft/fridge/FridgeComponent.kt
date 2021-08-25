@@ -25,7 +25,7 @@ import com.pyamsoft.fridge.butler.ButlerModule
 import com.pyamsoft.fridge.butler.injector.ButlerComponent
 import com.pyamsoft.fridge.butler.workmanager.WorkManagerModule
 import com.pyamsoft.fridge.category.BaseCategoryComponent
-import com.pyamsoft.fridge.core.R
+import com.pyamsoft.fridge.core.R as R2
 import com.pyamsoft.fridge.db.DbModule
 import com.pyamsoft.fridge.db.room.RoomModule
 import com.pyamsoft.fridge.detail.BaseDetailComponent
@@ -132,7 +132,14 @@ internal interface FridgeComponent {
       @JvmStatic
       @Named("app_name")
       internal fun provideAppNameRes(): Int {
-        return R.string.app_name
+        return R2.string.app_name
+      }
+
+      @Provides
+      @JvmStatic
+      @Named("app_icon")
+      internal fun provideAppIconRes(): Int {
+        return R.mipmap.ic_launcher_round
       }
     }
   }

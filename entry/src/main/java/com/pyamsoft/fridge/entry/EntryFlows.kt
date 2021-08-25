@@ -22,26 +22,46 @@ import com.pyamsoft.fridge.db.item.FridgeItem
 import com.pyamsoft.pydroid.arch.UiControllerEvent
 import com.pyamsoft.pydroid.arch.UiViewEvent
 import com.pyamsoft.pydroid.arch.UiViewState
+import timber.log.Timber
 
 data class EntryViewState
 internal constructor(
-    // All currently displayed list entries
-    val displayedEntries: List<EntryGroup>,
     // All the list entries before filtering
-    internal val allEntries: List<EntryGroup>,
+    val allEntries: List<EntryItems.EntryGroup>,
     val undoableEntry: FridgeEntry?,
     val isLoading: Boolean,
     val error: Throwable?,
     val search: String,
     val bottomOffset: Int,
     val sort: Sorts,
+    val showHeader: Boolean,
 ) : UiViewState {
 
-  data class EntryGroup
-  internal constructor(
-      val entry: FridgeEntry,
-      val items: List<FridgeItem>,
-  )
+  // All currently displayed list entries
+  val displayedEntries: List<EntryItems>
+
+  init {
+    displayedEntries =
+        (if (showHeader) listOf(EntryItems.Header) else emptyList<EntryItems>()) +
+            getOnlyVisibleEntries()
+    Timber.d("Show HEADER: $showHeader $displayedEntries")
+  }
+
+  @CheckResult
+  private fun getOnlyVisibleEntries(): List<EntryItems> {
+    return allEntries.asSequence().filter { it.entry.matchesQuery(search, true) }.toList()
+  }
+
+  sealed class EntryItems {
+
+    object Header : EntryItems()
+
+    data class EntryGroup
+    internal constructor(
+        val entry: FridgeEntry,
+        val items: List<FridgeItem>,
+    ) : EntryItems()
+  }
 
   @CheckResult
   internal fun FridgeEntry.matchesQuery(query: String, defaultValue: Boolean): Boolean {

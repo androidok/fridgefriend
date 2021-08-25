@@ -37,6 +37,7 @@ import com.pyamsoft.fridge.entry.BaseEntryComponent
 import com.pyamsoft.fridge.entry.create.CreateEntryComponent
 import com.pyamsoft.fridge.main.MainComponent
 import com.pyamsoft.fridge.preference.PreferenceModule
+import com.pyamsoft.fridge.receiver.BootReceiver
 import com.pyamsoft.fridge.search.BaseSearchComponent
 import com.pyamsoft.fridge.setting.SettingsComponent
 import com.pyamsoft.fridge.ui.UiModule
@@ -92,6 +93,8 @@ internal interface FridgeComponent {
   @CheckResult fun plusDateSelectComponent(): DateSelectComponent
 
   fun inject(application: FridgeFriend)
+
+  fun inject(application: BootReceiver)
 
   @Component.Factory
   interface Factory {

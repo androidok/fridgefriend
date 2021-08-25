@@ -28,9 +28,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/transparent"
+            android:theme="@style/ThemeOverlay.Fridge.Toolbar"
             app:contentInsetEnd="0dp"
             app:contentInsetStart="0dp"
             app:contentInsetStartWithNavigation="0dp"
+            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Dark"
             app:title="@string/blank"
             app:titleMargin="0dp">
 

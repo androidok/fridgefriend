@@ -22,7 +22,6 @@ import com.pyamsoft.fridge.db.item.FridgeItem
 import com.pyamsoft.pydroid.arch.UiControllerEvent
 import com.pyamsoft.pydroid.arch.UiViewEvent
 import com.pyamsoft.pydroid.arch.UiViewState
-import timber.log.Timber
 
 data class EntryViewState
 internal constructor(
@@ -38,14 +37,9 @@ internal constructor(
 ) : UiViewState {
 
   // All currently displayed list entries
-  val displayedEntries: List<EntryItems>
-
-  init {
-    displayedEntries =
-        (if (showHeader) listOf(EntryItems.Header) else emptyList<EntryItems>()) +
-            getOnlyVisibleEntries()
-    Timber.d("Show HEADER: $showHeader $displayedEntries")
-  }
+  val displayedEntries: List<EntryItems> =
+      (if (showHeader) listOf(EntryItems.Header) else emptyList<EntryItems>()) +
+          getOnlyVisibleEntries()
 
   @CheckResult
   private fun getOnlyVisibleEntries(): List<EntryItems> {

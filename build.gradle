@@ -62,7 +62,7 @@ buildscript {
     fastAdapter = "5.4.1"
 
     // Jobs
-    workmanager = "2.5.0"
+    workmanager = "2.6.0"
 
     // Tooltips
     balloon = "1.3.6"

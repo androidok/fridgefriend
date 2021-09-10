@@ -59,7 +59,7 @@ buildscript {
 
     moshi = "1.12.0"
 
-    fastAdapter = "5.4.1"
+    fastAdapter = "5.5.0"
 
     // Jobs
     workmanager = "2.6.0"

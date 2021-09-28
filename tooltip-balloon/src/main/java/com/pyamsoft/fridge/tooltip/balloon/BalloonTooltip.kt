@@ -32,7 +32,7 @@ internal constructor(
 
   override fun show(anchor: View) =
       when (direction) {
-        Tooltip.Direction.CENTER -> balloon.show(anchor)
+        Tooltip.Direction.CENTER -> balloon.showAtCenter(anchor)
         Tooltip.Direction.TOP -> balloon.showAlignTop(anchor)
         Tooltip.Direction.BOTTOM -> balloon.showAlignBottom(anchor)
         Tooltip.Direction.LEFT -> balloon.showAlignLeft(anchor)
@@ -41,7 +41,7 @@ internal constructor(
 
   override fun show(anchor: View, xOff: Int, yOff: Int) =
       when (direction) {
-        Tooltip.Direction.CENTER -> balloon.show(anchor, xOff, yOff)
+        Tooltip.Direction.CENTER -> balloon.showAsDropDown(anchor, xOff, yOff)
         Tooltip.Direction.TOP -> balloon.showAlignTop(anchor, xOff, yOff)
         Tooltip.Direction.BOTTOM -> balloon.showAlignBottom(anchor, xOff, yOff)
         Tooltip.Direction.LEFT -> balloon.showAlignLeft(anchor, xOff, yOff)

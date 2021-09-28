@@ -20,10 +20,10 @@ import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.LifecycleOwner
-import com.pyamsoft.fridge.theme.R
 import com.pyamsoft.fridge.detail.DetailViewState
 import com.pyamsoft.fridge.detail.snackbar.CustomSnackbar
 import com.pyamsoft.fridge.search.databinding.SearchFilterBinding
+import com.pyamsoft.fridge.theme.R
 import com.pyamsoft.fridge.ui.SnackbarContainer
 import com.pyamsoft.pydroid.arch.BaseUiView
 import com.pyamsoft.pydroid.arch.UiRender

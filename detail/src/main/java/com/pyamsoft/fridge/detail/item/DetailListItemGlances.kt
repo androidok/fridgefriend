@@ -22,7 +22,6 @@ import androidx.annotation.CheckResult
 import androidx.annotation.DrawableRes
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import com.pyamsoft.fridge.core.R as R2
 import com.pyamsoft.fridge.core.today
 import com.pyamsoft.fridge.db.item.FridgeItem
 import com.pyamsoft.fridge.db.item.cleanMidnight
@@ -34,6 +33,7 @@ import com.pyamsoft.fridge.db.item.isExpired
 import com.pyamsoft.fridge.db.item.isExpiringSoon
 import com.pyamsoft.fridge.detail.R
 import com.pyamsoft.fridge.detail.databinding.DetailListItemGlancesBinding
+import com.pyamsoft.fridge.theme.R as R2
 import com.pyamsoft.fridge.tooltip.Tooltip
 import com.pyamsoft.fridge.tooltip.TooltipCreator
 import com.pyamsoft.pydroid.arch.BaseUiView
@@ -264,8 +264,11 @@ internal constructor(
       if (isVisible) {
         view.isVisible = true
         val color =
-            if (isColored) R2.color.colorSecondary
-            else if (theming.isDarkTheme()) R3.color.white else R3.color.black
+            when {
+              isColored -> R2.color.colorSecondary
+              theming.isDarkTheme() -> R3.color.white
+              else -> R3.color.black
+            }
         loaded?.dispose()
         return imageLoader
             .asDrawable()

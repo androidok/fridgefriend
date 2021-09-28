@@ -24,7 +24,7 @@ import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import com.pyamsoft.fridge.butler.notification.ExpiredItemNotifyData
 import com.pyamsoft.fridge.butler.notification.NotificationHandler
-import com.pyamsoft.fridge.core.R
+import com.pyamsoft.fridge.theme.R
 import com.pyamsoft.fridge.db.item.FridgeItem
 import com.pyamsoft.pydroid.notify.NotifyData
 import com.pyamsoft.pydroid.notify.NotifyId

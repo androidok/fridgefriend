@@ -25,7 +25,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.swipe.SimpleSwipeCallback
-import com.pyamsoft.fridge.core.R as R2
+import com.pyamsoft.fridge.theme.R as R2
 import com.pyamsoft.fridge.db.item.FridgeItem
 import com.pyamsoft.fridge.db.item.FridgeItem.Presence.HAVE
 import com.pyamsoft.fridge.db.item.FridgeItem.Presence.NEED

@@ -83,8 +83,5 @@ dependencies {
   api "com.github.pyamsoft.pydroid:ui:$pydroid"
   api "com.github.pyamsoft.pydroid:loader:$pydroid"
 
-  // Chart API for XML layouts
-  api "com.github.PhilJay:MPAndroidChart:$mpchart"
-
-  api project(':core')
+  api project(':theme')
 }

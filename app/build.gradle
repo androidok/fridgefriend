@@ -127,6 +127,7 @@ dependencies {
   //  implementation project(':ocr')
   implementation project(':search')
   implementation project(':setting')
+  implementation project(':theme')
   implementation project(':tooltip')
   implementation project(':tooltip-balloon')
   implementation project(':ui')

@@ -38,7 +38,9 @@ internal constructor(
     private val owner: LifecycleOwner,
     private val imageLoader: ImageLoader,
     parent: ViewGroup,
-) : BaseUiView<DetailViewState, SearchViewEvent.FilterEvent, SearchFilterBinding>(parent), SnackbarContainer {
+) :
+    BaseUiView<DetailViewState, SearchViewEvent.FilterEvent, SearchFilterBinding>(parent),
+    SnackbarContainer {
 
   override val viewBinding = SearchFilterBinding::inflate
 

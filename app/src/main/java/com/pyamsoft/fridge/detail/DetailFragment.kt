@@ -171,7 +171,7 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
                 toolbarViewModel.handleTopBarMeasured(it.height)
             is DetailViewEvent.ToolbarEvent.TabSwitched ->
                 toolbarViewModel.handleTabsSwitched(it.isHave)
-              is DetailViewEvent.ToolbarEvent.Search -> toolbarViewModel.handleSearch(it.query)
+            is DetailViewEvent.ToolbarEvent.Search -> toolbarViewModel.handleSearch(it.query)
           }
         }
 

@@ -27,7 +27,7 @@ android {
     minSdkVersion rootProject.ext.minSdk
     targetSdkVersion rootProject.ext.maxSdk
     versionCode 33
-    versionName "2021-SNAPSHOT"
+    versionName "20210919-1"
 
     // For vector drawables
     vectorDrawables.useSupportLibrary = true

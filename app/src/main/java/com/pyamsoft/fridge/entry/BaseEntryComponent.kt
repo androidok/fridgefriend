@@ -22,8 +22,6 @@ import androidx.lifecycle.LifecycleOwner
 import com.pyamsoft.fridge.entry.item.EntryItemComponent
 import com.pyamsoft.fridge.tooltip.balloon.TooltipModule
 import com.pyamsoft.fridge.ui.ThemeProviderModule
-import com.pyamsoft.pydroid.ui.app.AppBarActivity
-import com.pyamsoft.pydroid.ui.app.ToolbarActivity
 import dagger.BindsInstance
 import dagger.Subcomponent
 

@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 class SettingsViewModel
 @Inject
 internal constructor(
-  bottomOffsetBus: EventConsumer<BottomOffset>,
+    bottomOffsetBus: EventConsumer<BottomOffset>,
 ) : UiViewModel<SettingsViewState, UnitControllerEvent>(SettingsViewState(bottomOffset = 0)) {
 
   init {

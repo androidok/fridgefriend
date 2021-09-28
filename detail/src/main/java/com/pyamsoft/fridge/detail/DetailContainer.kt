@@ -22,7 +22,6 @@ import androidx.core.view.updatePadding
 import com.pyamsoft.fridge.detail.databinding.DetailContainerBinding
 import com.pyamsoft.pydroid.arch.BaseUiView
 import com.pyamsoft.pydroid.arch.UiRender
-import com.pyamsoft.pydroid.ui.theme.ThemeProvider
 import com.pyamsoft.pydroid.ui.util.layout
 import javax.inject.Inject
 

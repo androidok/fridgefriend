@@ -75,6 +75,8 @@ internal class MainActivity :
     feature(
         "Adds the ability to quickly re-add an Item to your Shopping list when swiping it away for Consume or Spoil")
     bugfix("Preserve the search state on device rotation on the Search screen")
+    change("UI Refresh for new version")
+    feature("Sorting on Search screen")
     //        // TODO(Do this)
     //        feature("More information on Group overview screen")
     //        // TODO(Do this): Entry screen empty state

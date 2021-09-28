@@ -29,11 +29,11 @@ import com.pyamsoft.pydroid.arch.UiStateModel
 import com.pyamsoft.pydroid.bus.EventConsumer
 import com.pyamsoft.pydroid.core.ResultWrapper
 import javax.inject.Inject
+import javax.inject.Named
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Named
 
 // Share this single StateModel between the entire fragment scope
 // Used particularly for ItemMove module

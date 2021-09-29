@@ -28,6 +28,7 @@ import com.pyamsoft.fridge.detail.databinding.ExpandToolbarBinding
 import com.pyamsoft.fridge.ui.withRoundedBackground
 import com.pyamsoft.pydroid.arch.BaseUiView
 import com.pyamsoft.pydroid.arch.UiRender
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.loader.ImageLoader
 import com.pyamsoft.pydroid.loader.ImageTarget
 import com.pyamsoft.pydroid.ui.R as R2
@@ -136,27 +137,27 @@ internal constructor(
 
   private fun handleItem(item: FridgeItem?) {
     if (item == null) {
-      requireNotNull(deleteMenuItem).isVisible = false
-      requireNotNull(consumeMenuItem).isVisible = false
-      requireNotNull(spoilMenuItem).isVisible = false
-      requireNotNull(restoreMenuItem).isVisible = false
-      requireNotNull(moveMenuItem).isVisible = false
+      deleteMenuItem.requireNotNull().isVisible = false
+      consumeMenuItem.requireNotNull().isVisible = false
+      spoilMenuItem.requireNotNull().isVisible = false
+      restoreMenuItem.requireNotNull().isVisible = false
+      moveMenuItem.requireNotNull().isVisible = false
     } else {
       val isReal = item.isReal()
       val isHave = item.presence() == HAVE
 
       // Always show delete and move
-      requireNotNull(deleteMenuItem).isVisible = isReal
-      requireNotNull(moveMenuItem).isVisible = isReal
+      deleteMenuItem.requireNotNull().isVisible = isReal
+      moveMenuItem.requireNotNull().isVisible = isReal
 
       if (item.isArchived()) {
-        requireNotNull(restoreMenuItem).isVisible = isReal
-        requireNotNull(consumeMenuItem).isVisible = false
-        requireNotNull(spoilMenuItem).isVisible = false
+        restoreMenuItem.requireNotNull().isVisible = isReal
+        consumeMenuItem.requireNotNull().isVisible = false
+        spoilMenuItem.requireNotNull().isVisible = false
       } else {
-        requireNotNull(consumeMenuItem).isVisible = isReal && isHave
-        requireNotNull(spoilMenuItem).isVisible = isReal && isHave
-        requireNotNull(restoreMenuItem).isVisible = false
+        consumeMenuItem.requireNotNull().isVisible = isReal && isHave
+        spoilMenuItem.requireNotNull().isVisible = isReal && isHave
+        restoreMenuItem.requireNotNull().isVisible = false
       }
     }
   }

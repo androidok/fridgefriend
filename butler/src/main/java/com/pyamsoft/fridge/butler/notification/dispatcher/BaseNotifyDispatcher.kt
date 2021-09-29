@@ -31,6 +31,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import com.pyamsoft.fridge.butler.notification.NotificationHandler
 import com.pyamsoft.fridge.theme.R
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.notify.NotifyChannelInfo
 import com.pyamsoft.pydroid.notify.NotifyData
 import com.pyamsoft.pydroid.notify.NotifyDispatcher
@@ -49,7 +50,7 @@ protected constructor(
   }
 
   private val channelCreator by lazy {
-    requireNotNull(context.applicationContext.getSystemService<NotificationManager>())
+    context.applicationContext.getSystemService<NotificationManager>().requireNotNull()
   }
 
   private fun guaranteeNotificationChannelExists(channelInfo: NotifyChannelInfo) {

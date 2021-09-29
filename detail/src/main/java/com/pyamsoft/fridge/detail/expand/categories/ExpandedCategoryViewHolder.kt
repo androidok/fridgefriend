@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.pyamsoft.fridge.detail.databinding.ExpandCategoryItemHolderBinding
 import com.pyamsoft.pydroid.arch.ViewBinder
 import com.pyamsoft.pydroid.arch.createViewBinder
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.ui.util.layout
 import com.pyamsoft.pydroid.util.doOnDestroy
 import javax.inject.Inject
@@ -47,12 +48,17 @@ internal constructor(
   init {
     factory.create(binding.expandCategoryItem).inject(this)
 
-    val thumbnailView = requireNotNull(thumbnail)
-    val scrimView = requireNotNull(scrim)
-    val nameView = requireNotNull(name)
-    val selectOverlayView = requireNotNull(selectOverlay)
+    val thumbnailView = thumbnail.requireNotNull()
+    val scrimView = scrim.requireNotNull()
+    val nameView = name.requireNotNull()
+    val selectOverlayView = selectOverlay.requireNotNull()
     viewBinder =
-        createViewBinder(thumbnailView, scrimView, selectOverlayView, nameView) {
+        createViewBinder(
+            thumbnailView,
+            scrimView,
+            selectOverlayView,
+            nameView,
+        ) {
           return@createViewBinder when (it) {
             is ExpandedCategoryViewEvent.Select ->
                 callback.onCategorySelected(bindingAdapterPosition)

@@ -29,6 +29,7 @@ import com.pyamsoft.fridge.ui.animatePopInFromBottom
 import com.pyamsoft.fridge.ui.createRoundedBackground
 import com.pyamsoft.pydroid.arch.BaseUiView
 import com.pyamsoft.pydroid.arch.UiRender
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.util.asDp
 import com.pyamsoft.pydroid.util.doOnApplyWindowInsets
 import javax.inject.Inject
@@ -107,7 +108,7 @@ class MainNavigation @Inject internal constructor(parent: ViewGroup) :
    */
   private fun correctBackground() {
     layoutRoot.apply {
-      background = requireNotNull(backgroundDrawable)
+      background = backgroundDrawable.requireNotNull()
       elevation = 8.asDp(context).toFloat()
     }
   }

@@ -27,11 +27,16 @@ class EntryContainer
 @Inject
 internal constructor(
     parent: ViewGroup,
+    nestedList: EntryList,
 ) : BaseUiView<EntryViewState, EntryViewEvent, EntryContainerBinding>(parent) {
 
   override val viewBinding = EntryContainerBinding::inflate
 
   override val layoutRoot by boundView { entryContainer }
+
+  init {
+    nest(nestedList)
+  }
 
   override fun onRender(state: UiRender<EntryViewState>) {
     state.mapChanged { it.bottomOffset }.render(viewScope) { handleBottomMargin(it) }

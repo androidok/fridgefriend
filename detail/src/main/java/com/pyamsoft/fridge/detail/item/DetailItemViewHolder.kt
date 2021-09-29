@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.pyamsoft.fridge.detail.databinding.DetailListItemHolderBinding
 import com.pyamsoft.pydroid.arch.ViewBinder
 import com.pyamsoft.pydroid.arch.createViewBinder
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.ui.util.layout
 import com.pyamsoft.pydroid.util.doOnDestroy
 import javax.inject.Inject
@@ -45,29 +46,24 @@ internal constructor(
 
   @JvmField @Inject internal var extraContainer: DetailListItemContainer? = null
 
-  // Nested in Container
-  @JvmField @Inject internal var glances: DetailListItemGlances? = null
-
-  // Nested in Container
-  @JvmField @Inject internal var date: DetailListItemDate? = null
-
   private val viewBinder: ViewBinder<DetailItemViewState>
 
   init {
     factory.create(binding.detailListItem, editable).inject(this)
 
-    // Nest views
-    val extra = requireNotNull(extraContainer)
-    val nestedGlances = requireNotNull(glances)
-    val nestedDate = requireNotNull(date)
-    extra.nest(nestedDate, nestedGlances)
-
-    val click = requireNotNull(clickView)
-    val count = requireNotNull(countView)
-    val name = requireNotNull(nameView)
-    val presence = requireNotNull(presenceView)
+    val extra = extraContainer.requireNotNull()
+    val click = clickView.requireNotNull()
+    val count = countView.requireNotNull()
+    val name = nameView.requireNotNull()
+    val presence = presenceView.requireNotNull()
     viewBinder =
-        createViewBinder(click, name, extra, count, presence) {
+        createViewBinder(
+            click,
+            name,
+            extra,
+            count,
+            presence,
+        ) {
           return@createViewBinder when (it) {
             is DetailItemViewEvent.ExpandItem -> callback.onItemExpanded(bindingAdapterPosition)
             is DetailItemViewEvent.CommitPresence ->

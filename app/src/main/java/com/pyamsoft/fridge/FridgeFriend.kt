@@ -27,6 +27,7 @@ import com.pyamsoft.fridge.core.PRIVACY_POLICY_URL
 import com.pyamsoft.fridge.core.TERMS_CONDITIONS_URL
 import com.pyamsoft.fridge.main.MainActivity
 import com.pyamsoft.pydroid.bootstrap.libraries.OssLibraries
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.ui.ModuleProvider
 import com.pyamsoft.pydroid.ui.PYDroid
 import com.pyamsoft.pydroid.util.isDebugMode
@@ -76,7 +77,7 @@ class FridgeFriend : Application() {
     // to the main thread to defer this work until after start up is done
     Handler(Looper.getMainLooper()).post {
       applicationScope.launch(context = Dispatchers.Default) {
-        requireNotNull(butler).initOnAppStart(requireNotNull(orderFactory))
+        butler.requireNotNull().initOnAppStart(orderFactory.requireNotNull())
       }
     }
   }

@@ -27,6 +27,7 @@ import com.pyamsoft.fridge.detail.expand.categories.ExpandItemCategoryListAdapte
 import com.pyamsoft.fridge.detail.expand.categories.ExpandedCategoryViewState
 import com.pyamsoft.pydroid.arch.BaseUiView
 import com.pyamsoft.pydroid.arch.UiRender
+import com.pyamsoft.pydroid.core.requireNotNull
 import javax.inject.Inject
 
 class ExpandItemCategoryList
@@ -78,7 +79,7 @@ internal constructor(
 
   @CheckResult
   private fun usingAdapter(): ExpandItemCategoryListAdapter {
-    return requireNotNull(modelAdapter)
+    return modelAdapter.requireNotNull()
   }
 
   override fun onRender(state: UiRender<ExpandedViewState>) {

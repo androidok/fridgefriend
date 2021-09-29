@@ -85,7 +85,7 @@ internal class MainActivity :
   }
 
   override val fragmentContainerId: Int
-    get() = requireNotNull(container).id()
+    get() = container.requireNotNull().id()
 
   override val snackbarRoot: ViewGroup
     get() {
@@ -99,7 +99,7 @@ internal class MainActivity :
         }
       }
 
-      val fallbackContainer = requireNotNull(snackbar?.container())
+      val fallbackContainer = snackbar.requireNotNull().container()
       Timber.d("Return activity snackbar container: $fallbackContainer")
       return fallbackContainer
     }
@@ -242,14 +242,14 @@ internal class MainActivity :
 
   private fun beginWork() {
     this.lifecycleScope.launch(context = Dispatchers.Default) {
-      requireNotNull(butler).initOnAppStart(requireNotNull(orderFactory))
+      butler.requireNotNull().initOnAppStart(orderFactory.requireNotNull())
     }
   }
 
   private fun clearLaunchNotification() {
     val id = intent.getIntExtra(NotificationHandler.KEY_NOTIFICATION_ID, 0)
     if (id != 0) {
-      requireNotNull(notificationHandler).cancel(id.toNotifyId())
+      notificationHandler.requireNotNull().cancel(id.toNotifyId())
     }
   }
 

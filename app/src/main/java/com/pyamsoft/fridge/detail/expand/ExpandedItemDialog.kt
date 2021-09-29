@@ -89,9 +89,9 @@ internal class ExpandedItemDialog :
     makeFullWidth()
 
     val binding = LayoutConstraintBinding.bind(view)
-    val itemId = FridgeItem.Id(requireNotNull(requireArguments().getString(ITEM)))
-    val entryId = FridgeEntry.Id(requireNotNull(requireArguments().getString(ENTRY)))
-    val presenceArgument = Presence.valueOf(requireNotNull(requireArguments().getString(PRESENCE)))
+    val itemId = FridgeItem.Id(requireArguments().getString(ITEM).requireNotNull())
+    val entryId = FridgeEntry.Id(requireArguments().getString(ENTRY).requireNotNull())
+    val presenceArgument = Presence.valueOf(requireArguments().getString(PRESENCE).requireNotNull())
 
     Injector.obtainFromApplication<FridgeComponent>(view.context)
         .plusExpandComponent()
@@ -107,15 +107,15 @@ internal class ExpandedItemDialog :
         .create(binding.layoutConstraint)
         .inject(this)
 
-    val name = requireNotNull(name)
-    val date = requireNotNull(date)
-    val presence = requireNotNull(presence)
-    val count = requireNotNull(count)
-    val sameNamedItems = requireNotNull(sameNamedItems)
-    val errorDisplay = requireNotNull(errorDisplay)
-    val toolbar = requireNotNull(toolbar)
-    val categories = requireNotNull(categories)
-    val purchased = requireNotNull(purchased)
+    val name = name.requireNotNull()
+    val date = date.requireNotNull()
+    val presence = presence.requireNotNull()
+    val count = count.requireNotNull()
+    val sameNamedItems = sameNamedItems.requireNotNull()
+    val errorDisplay = errorDisplay.requireNotNull()
+    val toolbar = toolbar.requireNotNull()
+    val categories = categories.requireNotNull()
+    val purchased = purchased.requireNotNull()
     val shadow =
         DropshadowView.createTyped<ExpandedViewState, ExpandedViewEvent>(binding.layoutConstraint)
 

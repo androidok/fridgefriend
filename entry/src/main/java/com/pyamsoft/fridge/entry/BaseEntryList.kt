@@ -28,6 +28,7 @@ import com.pyamsoft.fridge.entry.item.EntryItemViewState
 import com.pyamsoft.pydroid.arch.BaseUiView
 import com.pyamsoft.pydroid.arch.UiRender
 import com.pyamsoft.pydroid.arch.UiViewEvent
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.ui.util.removeAllItemDecorations
 import com.pyamsoft.pydroid.util.asDp
 import io.cabriole.decorator.LinearMarginDecoration
@@ -135,7 +136,7 @@ protected constructor(
 
   @CheckResult
   private fun usingAdapter(): EntryListAdapter {
-    return requireNotNull(modelAdapter)
+    return modelAdapter.requireNotNull()
   }
 
   private fun setList(list: List<EntryViewState.EntryItems>) {

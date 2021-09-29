@@ -38,6 +38,7 @@ import com.pyamsoft.fridge.tooltip.Tooltip
 import com.pyamsoft.fridge.tooltip.TooltipCreator
 import com.pyamsoft.pydroid.arch.BaseUiView
 import com.pyamsoft.pydroid.arch.UiRender
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.loader.ImageLoader
 import com.pyamsoft.pydroid.loader.Loaded
 import com.pyamsoft.pydroid.ui.R as R3
@@ -138,8 +139,8 @@ internal constructor(
       }
 
       // This should be fine because of the isVisible conditional
-      val dateRange = requireNotNull(state.expirationRange).range
-      val isSameDay = requireNotNull(state.isSameDayExpired).isSame
+      val dateRange = state.expirationRange.requireNotNull().range
+      val isSameDay = state.isSameDayExpired.requireNotNull().isSame
 
       val now = today().cleanMidnight()
       val soonDate = today().daysLaterMidnight(dateRange)

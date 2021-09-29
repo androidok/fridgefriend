@@ -37,6 +37,7 @@ import com.pyamsoft.fridge.theme.R as R2
 import com.pyamsoft.fridge.ui.R as R4
 import com.pyamsoft.pydroid.arch.BaseUiView
 import com.pyamsoft.pydroid.arch.UiRender
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.loader.ImageLoader
 import com.pyamsoft.pydroid.loader.ImageTarget
 import com.pyamsoft.pydroid.loader.Loaded
@@ -352,7 +353,7 @@ internal constructor(
 
   @CheckResult
   private fun usingAdapter(): DetailListAdapter {
-    return requireNotNull(modelAdapter)
+    return modelAdapter.requireNotNull()
   }
 
   private fun restoreListItem(position: Int) {

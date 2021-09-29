@@ -25,9 +25,15 @@ class DetailListItemContainer
 @Inject
 internal constructor(
     parent: ViewGroup,
+    glances: DetailListItemGlances,
+    date: DetailListItemDate,
 ) : BaseUiView<DetailItemViewState, DetailItemViewEvent, DetailListItemContainerBinding>(parent) {
 
   override val viewBinding = DetailListItemContainerBinding::inflate
 
   override val layoutRoot by boundView { detailItemContainer }
+
+  init {
+    nest(date, glances)
+  }
 }

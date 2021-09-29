@@ -20,6 +20,7 @@ import android.content.Context
 import com.pyamsoft.fridge.butler.params.EmptyParameters
 import com.pyamsoft.fridge.butler.runner.NightlyRunner
 import com.pyamsoft.fridge.butler.runner.WorkResult
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.inject.Injector
 import java.util.UUID
 import javax.inject.Inject
@@ -36,6 +37,6 @@ class NightlyInjector(context: Context) : BaseInjector<EmptyParameters>(context)
   ): WorkResult {
     Injector.obtainFromApplication<ButlerComponent>(context).inject(this)
 
-    return requireNotNull(runner).doWork(id, tags, params)
+    return runner.requireNotNull().doWork(id, tags, params)
   }
 }

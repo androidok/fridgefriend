@@ -28,6 +28,7 @@ import com.pyamsoft.highlander.highlander
 import com.pyamsoft.pydroid.arch.UiStateModel
 import com.pyamsoft.pydroid.bus.EventConsumer
 import com.pyamsoft.pydroid.core.ResultWrapper
+import com.pyamsoft.pydroid.core.requireNotNull
 import javax.inject.Inject
 import javax.inject.Named
 import kotlinx.coroutines.CoroutineScope
@@ -273,7 +274,7 @@ constructor(
 
   internal fun handleUndoDelete(scope: CoroutineScope) {
     scope.launch(context = Dispatchers.Default) {
-      val entry = requireNotNull(state.undoableEntry)
+      val entry = state.undoableEntry.requireNotNull()
       undoRunner.call(entry).onFailure { Timber.e(it, "Error undoing entry $entry") }
     }
   }

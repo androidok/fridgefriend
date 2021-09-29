@@ -24,6 +24,7 @@ import com.pyamsoft.pydroid.arch.UiSavedState
 import com.pyamsoft.pydroid.arch.UiSavedStateViewModel
 import com.pyamsoft.pydroid.arch.UiSavedStateViewModelProvider
 import com.pyamsoft.pydroid.bus.EventBus
+import com.pyamsoft.pydroid.core.requireNotNull
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -110,7 +111,7 @@ internal constructor(
     setState(
         stateChange = { copy(page = newPage) },
         andThen = { newState ->
-          publishNewSelection(requireNotNull(newState.page), oldPage, force)
+          publishNewSelection(newState.page.requireNotNull(), oldPage, force)
         })
   }
 

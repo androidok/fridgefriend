@@ -23,6 +23,7 @@ import com.pyamsoft.fridge.core.today
 import com.pyamsoft.fridge.db.EmptyModel
 import com.pyamsoft.fridge.db.category.FridgeCategory
 import com.pyamsoft.fridge.db.entry.FridgeEntry
+import com.pyamsoft.pydroid.core.requireNotNull
 import java.util.Calendar
 import java.util.Date
 import kotlin.math.roundToLong
@@ -230,7 +231,7 @@ private const val WEEK_LIMIT = 10
 @CheckResult
 fun FridgeItem.getExpiringSoonMessage(now: Calendar): String {
   val todayTime = now.timeInMillis
-  val expiringTime = requireNotNull(this.expireTime()).time
+  val expiringTime = this.expireTime().requireNotNull().time
   val days = getDaysToTime(todayTime, expiringTime)
 
   require(days >= 0)
@@ -252,7 +253,7 @@ fun FridgeItem.getExpiringSoonMessage(now: Calendar): String {
 @CheckResult
 fun FridgeItem.getExpiredMessage(now: Calendar): String {
   val todayTime = now.timeInMillis
-  val expiringTime = requireNotNull(this.expireTime()).time
+  val expiringTime = this.expireTime().requireNotNull().time
   val days = getDaysToTime(expiringTime, todayTime)
 
   require(days >= 0)

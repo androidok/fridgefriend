@@ -24,6 +24,7 @@ import androidx.annotation.CheckResult
 import androidx.core.view.ViewCompat
 import androidx.core.view.ViewPropertyAnimatorCompat
 import com.pyamsoft.fridge.detail.databinding.DetailCustomSnackbarBinding
+import com.pyamsoft.pydroid.core.requireNotNull
 
 class CustomSnackbarLayout
 internal constructor(
@@ -37,7 +38,7 @@ internal constructor(
 
   private var _binding: DetailCustomSnackbarBinding? = null
   val binding: DetailCustomSnackbarBinding
-    get() = requireNotNull(_binding)
+    get() = _binding.requireNotNull()
 
   override fun onFinishInflate() {
     super.onFinishInflate()

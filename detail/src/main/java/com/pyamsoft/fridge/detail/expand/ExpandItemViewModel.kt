@@ -36,6 +36,7 @@ import com.pyamsoft.pydroid.arch.UiSavedStateViewModel
 import com.pyamsoft.pydroid.arch.UiSavedStateViewModelProvider
 import com.pyamsoft.pydroid.bus.EventBus
 import com.pyamsoft.pydroid.core.ResultWrapper
+import com.pyamsoft.pydroid.core.requireNotNull
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -161,12 +162,12 @@ internal constructor(
       }
 
   fun handleCloseSelf() {
-    viewModelScope.closeItem(requireNotNull(state.item))
+    viewModelScope.closeItem(state.item.requireNotNull())
   }
 
   private fun CoroutineScope.closeItem(closeMe: FridgeItem) {
     this.launch(context = Dispatchers.Default) {
-      requireNotNull(state.item).let { item ->
+      state.item.requireNotNull().let { item ->
         if (closeMe.id() == item.id() && closeMe.entryId() == item.entryId()) {
           publish(ExpandedControllerEvent.Close)
         }
@@ -175,14 +176,14 @@ internal constructor(
   }
 
   private fun CoroutineScope.handleModelUpdate(newItem: FridgeItem) {
-    requireNotNull(state.item).let { item ->
+    state.item.requireNotNull().let { item ->
       if (item.id() == newItem.id() && item.entryId() == newItem.entryId()) {
         setState(
             stateChange = { copy(item = newItem) },
             andThen = { newState ->
               saveCreatedItemId(newState)
 
-              val currentItem = requireNotNull(newState.item)
+              val currentItem = newState.item.requireNotNull()
               if (currentItem.isConsumed() || currentItem.isSpoiled()) {
                 Timber.d("Close item since it has been consumed/spoiled")
                 closeItem(currentItem)
@@ -193,7 +194,7 @@ internal constructor(
   }
 
   fun handlePickDate() {
-    val item = requireNotNull(state.item)
+    val item = state.item.requireNotNull()
     if (item.isArchived()) {
       return
     }
@@ -226,7 +227,7 @@ internal constructor(
   }
 
   fun handleCommitCount(count: Int) {
-    requireNotNull(state.item).let { item ->
+    state.item.requireNotNull().let { item ->
       if (count > 0) {
         setFixMessage("")
         commitItem(item.count(count))
@@ -238,7 +239,7 @@ internal constructor(
   }
 
   fun handleCommitName(name: String) {
-    requireNotNull(state.item).let { item ->
+    state.item.requireNotNull().let { item ->
       if (isNameValid(name)) {
         setFixMessage("")
         commitItem(item.name(name))
@@ -250,22 +251,20 @@ internal constructor(
   }
 
   fun handleCommitCategory(index: Int) {
-    state.apply {
-      requireNotNull(item).let { item ->
-        if (item.isArchived()) {
-          return
-        }
+    state.item.requireNotNull().also { item ->
+      if (item.isArchived()) {
+        return
+      }
 
-        val category = categories.getOrNull(index)
-        if (category != null) {
-          val existingCategoryId = item.categoryId()
-          if (existingCategoryId != null && existingCategoryId == category.id()) {
-            Timber.d("Clearing category id")
-            commitItem(item.invalidateCategoryId())
-          } else {
-            Timber.d("Attempt save category: $category")
-            commitItem(item.categoryId(category.id()))
-          }
+      val category = state.categories.getOrNull(index)
+      if (category != null) {
+        val existingCategoryId = item.categoryId()
+        if (existingCategoryId != null && existingCategoryId == category.id()) {
+          Timber.d("Clearing category id")
+          commitItem(item.invalidateCategoryId())
+        } else {
+          Timber.d("Attempt save category: $category")
+          commitItem(item.categoryId(category.id()))
         }
       }
     }

@@ -57,9 +57,6 @@ internal class EntryFragment : Fragment(), SnackbarContainer, UiController<Entry
 
   @JvmField @Inject internal var addNew: EntryAddNew? = null
 
-  // Nested in container
-  @JvmField @Inject internal var nestedList: EntryList? = null
-
   private var stateSaver: StateSaver? = null
 
   private var fragmentContainerId = 0
@@ -82,17 +79,10 @@ internal class EntryFragment : Fragment(), SnackbarContainer, UiController<Entry
     val binding = LayoutCoordinatorBinding.bind(view)
     Injector.obtainFromApplication<FridgeComponent>(view.context)
         .plusEntryComponent()
-        .create(
-            requireActivity(),
-            viewLifecycleOwner,
-        )
+        .create(requireActivity(), viewLifecycleOwner)
         .plusEntryComponent()
         .create(binding.layoutCoordinator)
         .inject(this)
-
-    val container = requireNotNull(container)
-    val nestedList = requireNotNull(nestedList)
-    container.nest(nestedList)
 
     stateSaver =
         createComponent(
@@ -100,8 +90,8 @@ internal class EntryFragment : Fragment(), SnackbarContainer, UiController<Entry
             viewLifecycleOwner,
             viewModel,
             this,
-            container,
-            requireNotNull(addNew),
+            container.requireNotNull(),
+            addNew.requireNotNull(),
         ) {
           return@createComponent when (it) {
             is EntryViewEvent.AddEvent.AddNew -> startAddFlow()
@@ -168,8 +158,6 @@ internal class EntryFragment : Fragment(), SnackbarContainer, UiController<Entry
 
     container = null
     addNew = null
-
-    nestedList = null
 
     fragmentContainerId = 0
   }

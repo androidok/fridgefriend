@@ -22,6 +22,7 @@ import com.pyamsoft.fridge.entry.EntryInteractor
 import com.pyamsoft.highlander.highlander
 import com.pyamsoft.pydroid.arch.UiViewModel
 import com.pyamsoft.pydroid.core.ResultWrapper
+import com.pyamsoft.pydroid.core.requireNotNull
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -61,12 +62,12 @@ internal constructor(
   }
 
   fun handleUpdateName(name: String) {
-    requireNotNull(state.entry).let { e -> setState { copy(entry = e.name(name)) } }
+    state.entry.requireNotNull().let { e -> setState { copy(entry = e.name(name)) } }
   }
 
   fun handleCommitNewEntry() {
     viewModelScope.launch(context = Dispatchers.Default) {
-      requireNotNull(state.entry).let { e ->
+      state.entry.requireNotNull().let { e ->
         setState(
             stateChange = { copy(working = true) },
             andThen = {

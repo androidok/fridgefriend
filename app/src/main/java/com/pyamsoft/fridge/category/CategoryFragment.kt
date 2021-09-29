@@ -77,7 +77,7 @@ internal class CategoryFragment : Fragment(), UiController<UnitControllerEvent> 
             viewLifecycleOwner,
             viewModel,
             this,
-            requireNotNull(list),
+            list.requireNotNull(),
         ) {}
   }
 

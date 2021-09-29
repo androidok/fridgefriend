@@ -22,6 +22,7 @@ import com.pyamsoft.fridge.entry.EntryListAdapter
 import com.pyamsoft.fridge.entry.databinding.EntryListItemHolderBinding
 import com.pyamsoft.pydroid.arch.ViewBinder
 import com.pyamsoft.pydroid.arch.createViewBinder
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.util.doOnDestroy
 import javax.inject.Inject
 
@@ -46,7 +47,10 @@ internal constructor(
 
     viewBinder =
         createViewBinder(
-            requireNotNull(nameView), requireNotNull(scrimView), requireNotNull(clickView)) {
+            nameView.requireNotNull(),
+            scrimView.requireNotNull(),
+            clickView.requireNotNull(),
+        ) {
           return@createViewBinder when (it) {
             is EntryItemViewEvent.OnClick -> callback.onClick(bindingAdapterPosition)
             is EntryItemViewEvent.OnLongPress -> callback.onLongPress(bindingAdapterPosition)

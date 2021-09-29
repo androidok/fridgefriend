@@ -78,8 +78,9 @@ internal class CreateEntrySheet :
             viewLifecycleOwner,
             viewModel,
             this,
-            requireNotNull(name),
-            requireNotNull(commit)) {
+            name.requireNotNull(),
+            commit.requireNotNull(),
+        ) {
           return@createComponent when (it) {
             is CreateEntryViewEvent.Commit -> viewModel.handleCommitNewEntry()
             is CreateEntryViewEvent.NameChanged -> viewModel.handleUpdateName(it.name)

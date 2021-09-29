@@ -72,8 +72,8 @@ internal class ItemMoveDialog : AppCompatDialogFragment() {
     makeFullscreen()
 
     val binding = LayoutConstraintBinding.bind(view)
-    val itemId = FridgeItem.Id(requireNotNull(requireArguments().getString(ITEM)))
-    val entryId = FridgeEntry.Id(requireNotNull(requireArguments().getString(ENTRY)))
+    val itemId = FridgeItem.Id(requireArguments().getString(ITEM).requireNotNull())
+    val entryId = FridgeEntry.Id(requireArguments().getString(ENTRY).requireNotNull())
 
     val parent = binding.layoutConstraint
     Injector.obtainFromApplication<FridgeComponent>(view.context)
@@ -88,8 +88,8 @@ internal class ItemMoveDialog : AppCompatDialogFragment() {
         .create(parent)
         .inject(this)
 
-    val list = requireNotNull(list)
-    val toolbar = requireNotNull(toolbar)
+    val list = list.requireNotNull()
+    val toolbar = toolbar.requireNotNull()
     val dropshadow = DropshadowView.createTyped<ItemMoveViewState, ItemMoveViewEvent>(parent)
 
     val listSaver =
@@ -103,7 +103,8 @@ internal class ItemMoveDialog : AppCompatDialogFragment() {
                     is ItemMoveListControllerEvent.Selected -> handleEntrySelect(it.entry)
                   }
                 },
-            list) {
+            list,
+        ) {
           return@createComponent when (it) {
             is ReadOnlyListEvents.ForceRefresh -> listViewModel.handleRefreshList()
             is ReadOnlyListEvents.Select -> listViewModel.handleSelectEntry(it.index)

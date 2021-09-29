@@ -29,6 +29,7 @@ import com.pyamsoft.fridge.ui.animatePopInFromBottom
 import com.pyamsoft.pydroid.arch.BaseUiView
 import com.pyamsoft.pydroid.arch.UiRender
 import com.pyamsoft.pydroid.arch.UnitViewEvent
+import com.pyamsoft.pydroid.core.requireNotNull
 import javax.inject.Inject
 
 class CategoryListView
@@ -75,7 +76,7 @@ internal constructor(
 
   @CheckResult
   private fun usingAdapter(): CategoryAdapter {
-    return requireNotNull(modelAdapter)
+    return modelAdapter.requireNotNull()
   }
 
   override fun onRender(state: UiRender<CategoryViewState>) {

@@ -22,6 +22,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.pyamsoft.pydroid.arch.ViewBinder
 import com.pyamsoft.pydroid.arch.createViewBinder
+import com.pyamsoft.pydroid.core.requireNotNull
 import com.pyamsoft.pydroid.ui.util.layout
 import com.pyamsoft.pydroid.util.doOnDestroy
 import javax.inject.Inject
@@ -41,7 +42,7 @@ internal constructor(
     // Needs a small amount of margin so the staggered grid effect works
     factory.create(constraintLayout).inject(this)
 
-    val backgroundView = requireNotNull(background)
+    val backgroundView = background.requireNotNull()
     viewBinder =
         createViewBinder(backgroundView) {
           // TODO

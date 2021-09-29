@@ -80,9 +80,9 @@ internal class SearchFragment : Fragment() {
   ) {
     super.onViewCreated(view, savedInstanceState)
 
-    val entryId = FridgeEntry.Id(requireNotNull(requireArguments().getString(ENTRY)))
+    val entryId = FridgeEntry.Id(requireArguments().getString(ENTRY).requireNotNull())
     val presence =
-        FridgeItem.Presence.valueOf(requireNotNull(requireArguments().getString(PRESENCE)))
+        FridgeItem.Presence.valueOf(requireArguments().getString(PRESENCE).requireNotNull())
 
     val binding = LayoutCoordinatorBinding.bind(view)
     Injector.obtainFromApplication<FridgeComponent>(view.context)
@@ -133,7 +133,8 @@ internal class SearchFragment : Fragment() {
             viewLifecycleOwner,
             filterViewModel,
             controller = emptyController(),
-            requireNotNull(filter)) {
+            filter.requireNotNull(),
+        ) {
           return@createComponent when (it) {
             is SearchViewEvent.FilterEvent.AnotherOne -> filterViewModel.handleAddAgain(it.item)
             is SearchViewEvent.FilterEvent.ChangeCurrentFilter ->

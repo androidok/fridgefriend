@@ -62,8 +62,8 @@ internal class DateSelectDialog :
   override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
     val today = today()
-    val itemId = FridgeItem.Id(requireNotNull(requireArguments().getString(ITEM)))
-    val entryId = FridgeEntry.Id(requireNotNull(requireArguments().getString(ENTRY)))
+    val itemId = FridgeItem.Id(requireArguments().getString(ITEM).requireNotNull())
+    val entryId = FridgeEntry.Id(requireArguments().getString(ENTRY).requireNotNull())
     var initialYear = requireArguments().getInt(YEAR, 0)
     var initialMonth = requireArguments().getInt(MONTH, 0)
     var initialDay = requireArguments().getInt(DAY, 0)

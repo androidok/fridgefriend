@@ -84,7 +84,7 @@ internal class SettingsFragment : AppSettingsFragment() {
               viewLifecycleOwner,
               viewModel,
               this,
-              requireNotNull(spacer),
+              spacer.requireNotNull(),
           ) {}
 
       initializeUpdate()

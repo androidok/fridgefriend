@@ -16,11 +16,13 @@
 
 package com.pyamsoft.fridge.detail.base
 
+import androidx.annotation.CheckResult
 import com.pyamsoft.fridge.core.currentDate
 import com.pyamsoft.fridge.db.item.FridgeItem
 import com.pyamsoft.fridge.detail.DetailInteractor
 import com.pyamsoft.highlander.highlander
 import com.pyamsoft.pydroid.core.ResultWrapper
+import com.pyamsoft.pydroid.core.requireNotNull
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,28 +59,31 @@ internal constructor(
           .call(item, doUpdate)
           .onFailure { Timber.e(it, "Error updating item $item") }
           .onFailure { err ->
-            val handler = requireNotNull(handleError)
+            val handler = handleError.requireNotNull()
             handler(err)
           }
     }
   }
 
+  @CheckResult
+  private fun usingInteractor(): DetailInteractor {
+    return interactor.requireNotNull()
+  }
+
   internal fun consumeItem(scope: CoroutineScope, item: FridgeItem) {
-    scope.update(item) { requireNotNull(interactor).commit(it.consume(currentDate())) }
+    scope.update(item) { usingInteractor().commit(it.consume(currentDate())) }
   }
 
   internal fun restoreItem(scope: CoroutineScope, item: FridgeItem) {
-    scope.update(item) {
-      requireNotNull(interactor).commit(it.invalidateConsumption().invalidateSpoiled())
-    }
+    scope.update(item) { usingInteractor().commit(it.invalidateConsumption().invalidateSpoiled()) }
   }
 
   internal fun spoilItem(scope: CoroutineScope, item: FridgeItem) {
-    scope.update(item) { requireNotNull(interactor).commit(it.spoil(currentDate())) }
+    scope.update(item) { usingInteractor().commit(it.spoil(currentDate())) }
   }
 
   internal fun deleteItem(scope: CoroutineScope, item: FridgeItem) {
-    scope.update(item) { requireNotNull(interactor).delete(it, true) }
+    scope.update(item) { usingInteractor().delete(it, true) }
   }
 
   internal fun updateItem(scope: CoroutineScope, item: FridgeItem) {
@@ -104,6 +109,6 @@ internal constructor(
           return@run this
         }
 
-    scope.update(updated) { requireNotNull(interactor).commit(it) }
+    scope.update(updated) { usingInteractor().commit(it) }
   }
 }

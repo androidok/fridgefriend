@@ -86,8 +86,8 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
   ) {
     super.onViewCreated(view, savedInstanceState)
 
-    val entryId = FridgeEntry.Id(requireNotNull(requireArguments().getString(ENTRY)))
-    val presence = Presence.valueOf(requireNotNull(requireArguments().getString(PRESENCE)))
+    val entryId = FridgeEntry.Id(requireArguments().getString(ENTRY).requireNotNull())
+    val presence = Presence.valueOf(requireArguments().getString(PRESENCE).requireNotNull())
 
     val binding = LayoutCoordinatorBinding.bind(view)
     Injector.obtainFromApplication<FridgeComponent>(view.context)

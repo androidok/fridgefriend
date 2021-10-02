@@ -55,7 +55,7 @@ buildscript {
     timber = "5.0.1"
 
     // Dagger
-    dagger = "2.38.1"
+    dagger = "2.39"
 
     moshi = "1.12.0"
 

@@ -20,16 +20,13 @@ import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.LifecycleOwner
-import com.pyamsoft.fridge.db.item.FridgeItem
 import com.pyamsoft.fridge.detail.databinding.DetailAddNewBinding
 import com.pyamsoft.fridge.detail.snackbar.CustomSnackbar
-import com.pyamsoft.fridge.theme.R
 import com.pyamsoft.fridge.ui.R as R2
 import com.pyamsoft.fridge.ui.SnackbarContainer
 import com.pyamsoft.pydroid.arch.BaseUiView
 import com.pyamsoft.pydroid.arch.UiRender
 import com.pyamsoft.pydroid.loader.ImageLoader
-import com.pyamsoft.pydroid.loader.Loaded
 import com.pyamsoft.pydroid.loader.disposeOnDestroy
 import com.pyamsoft.pydroid.ui.util.setOnDebouncedClickListener
 import javax.inject.Inject
@@ -48,8 +45,6 @@ internal constructor(
 
   override val layoutRoot by boundView { detailAddNewRoot }
 
-  private var filterIconLoaded: Loaded? = null
-
   init {
     doOnInflate {
       imageLoader
@@ -65,20 +60,7 @@ internal constructor(
 
     doOnTeardown { binding.detailAddNewItem.setOnClickListener(null) }
 
-    doOnInflate {
-      binding.detailFilterItem.setOnDebouncedClickListener {
-        publish(DetailViewEvent.ButtonEvent.ChangeCurrentFilter)
-      }
-    }
-
-    doOnTeardown { binding.detailFilterItem.setOnClickListener(null) }
-
     doOnInflate { binding.detailAddNewItem.show() }
-  }
-
-  private fun clearFilter() {
-    filterIconLoaded?.dispose()
-    filterIconLoaded = null
   }
 
   override fun container(): CoordinatorLayout {
@@ -86,34 +68,9 @@ internal constructor(
   }
 
   override fun onRender(state: UiRender<DetailViewState>) {
-    state.mapChanged { it.showing }.render(viewScope) { handleShowing(it) }
-    state.mapChanged { it.listItemPresence }.render(viewScope) { handlePresence(it) }
     state.mapChanged { it.bottomOffset }.render(viewScope) { handleBottomMargin(it) }
     state.mapChanged { it.listError }.render(viewScope) { handleError(it) }
     state.mapChanged { it.undoable }.render(viewScope) { handleUndo(it) }
-  }
-
-  private fun handlePresence(presence: FridgeItem.Presence) {
-    // Hide filter button for NEED
-    if (presence == FridgeItem.Presence.NEED) {
-      binding.detailFilterItem.hide()
-    } else {
-      binding.detailFilterItem.show()
-    }
-  }
-
-  private fun handleShowing(showing: DetailViewState.Showing) {
-    clearFilter()
-    filterIconLoaded =
-        imageLoader
-            .asDrawable()
-            .load(
-                when (showing) {
-                  DetailViewState.Showing.FRESH -> R.drawable.ic_category_24
-                  DetailViewState.Showing.CONSUMED -> R.drawable.ic_consumed_24dp
-                  DetailViewState.Showing.SPOILED -> R.drawable.ic_spoiled_24dp
-                })
-            .into(binding.detailFilterItem)
   }
 
   private fun handleBottomMargin(height: Int) {

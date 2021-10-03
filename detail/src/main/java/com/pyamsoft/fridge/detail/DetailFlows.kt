@@ -33,7 +33,6 @@ internal constructor(
     val items: List<FridgeItem>,
     val isLoading: Boolean,
     val entry: FridgeEntry?,
-    val showing: Showing,
     val listError: Throwable?,
     val undoable: Undoable?,
     val expirationRange: ExpirationRange?,
@@ -56,16 +55,9 @@ internal constructor(
     val showAllItems = if (showAllEntries) isShowAllItemsEmptyState?.showAll ?: true else true
 
     val query = search
-    val shows = showing
     return items
         .asSequence()
-        .filter {
-          return@filter when (shows) {
-            Showing.FRESH -> !it.isArchived()
-            Showing.CONSUMED -> it.isConsumed()
-            Showing.SPOILED -> it.isSpoiled()
-          }
-        }
+        .filterNot { it.isArchived() }
         .filter { it.matchesQuery(query.text, showAllItems) }
         .toList()
   }
@@ -81,12 +73,6 @@ internal constructor(
     else {
       this.name().contains(query, ignoreCase = true)
     }
-  }
-
-  enum class Showing {
-    FRESH,
-    CONSUMED,
-    SPOILED
   }
 
   @CheckResult
@@ -106,8 +92,6 @@ sealed class DetailViewEvent : UiViewEvent {
   sealed class ButtonEvent : DetailViewEvent() {
 
     object AddNew : ButtonEvent()
-
-    object ChangeCurrentFilter : ButtonEvent()
 
     object ClearListError : ButtonEvent()
 

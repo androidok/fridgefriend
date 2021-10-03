@@ -137,8 +137,6 @@ internal class SearchFragment : Fragment() {
         ) {
           return@createComponent when (it) {
             is SearchViewEvent.FilterEvent.AnotherOne -> filterViewModel.handleAddAgain(it.item)
-            is SearchViewEvent.FilterEvent.ChangeCurrentFilter ->
-                filterViewModel.handleUpdateShowing()
             is SearchViewEvent.FilterEvent.ReallyDeleteItemNoUndo ->
                 filterViewModel.handleDeleteForever()
             is SearchViewEvent.FilterEvent.UndoDeleteItem -> filterViewModel.handleUndoDelete()

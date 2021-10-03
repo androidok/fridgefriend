@@ -30,8 +30,6 @@ sealed class SearchViewEvent : UiViewEvent {
 
   sealed class FilterEvent : SearchViewEvent() {
 
-    object ChangeCurrentFilter : FilterEvent()
-
     object UndoDeleteItem : FilterEvent()
 
     object ReallyDeleteItemNoUndo : FilterEvent()

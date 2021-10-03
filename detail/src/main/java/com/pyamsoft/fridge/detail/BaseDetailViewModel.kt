@@ -22,8 +22,6 @@ import com.pyamsoft.pydroid.arch.Renderable
 import com.pyamsoft.pydroid.arch.UiControllerEvent
 import com.pyamsoft.pydroid.arch.UiSavedState
 import com.pyamsoft.pydroid.arch.UiSavedStateViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 abstract class BaseDetailViewModel<C : UiControllerEvent>
 protected constructor(
@@ -40,14 +38,6 @@ protected constructor(
     doOnCleared { delegate.clear() }
 
     delegate.initialize(scope)
-
-    viewModelScope.launch(context = Dispatchers.Default) {
-      val filterName = restoreSavedState(SAVED_FILTER) { "" }
-      if (filterName.isNotBlank()) {
-        val filter = DetailViewState.Showing.valueOf(filterName)
-        delegate.handleUpdateFilter(this, filter)
-      }
-    }
   }
 
   fun handleAddAgain(item: FridgeItem) {
@@ -60,15 +50,5 @@ protected constructor(
 
   fun handleUndoDelete() {
     delegate.handleUndoDelete(viewModelScope)
-  }
-
-  fun handleUpdateShowing() {
-    delegate.handleToggleArchived(viewModelScope) { newShowing ->
-      putSavedState(SAVED_FILTER, newShowing.name)
-    }
-  }
-
-  companion object {
-    private const val SAVED_FILTER = "filter"
   }
 }

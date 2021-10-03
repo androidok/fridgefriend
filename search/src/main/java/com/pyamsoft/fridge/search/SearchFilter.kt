@@ -17,83 +17,22 @@
 package com.pyamsoft.fridge.search
 
 import android.view.ViewGroup
-import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.LifecycleOwner
 import com.pyamsoft.fridge.detail.DetailViewState
 import com.pyamsoft.fridge.detail.snackbar.CustomSnackbar
-import com.pyamsoft.fridge.search.databinding.SearchFilterBinding
-import com.pyamsoft.fridge.theme.R
-import com.pyamsoft.fridge.ui.SnackbarContainer
-import com.pyamsoft.pydroid.arch.BaseUiView
 import com.pyamsoft.pydroid.arch.UiRender
-import com.pyamsoft.pydroid.loader.ImageLoader
-import com.pyamsoft.pydroid.loader.Loaded
-import com.pyamsoft.pydroid.ui.util.setOnDebouncedClickListener
+import com.pyamsoft.pydroid.arch.UiView
 import javax.inject.Inject
 
 class SearchFilter
 @Inject
 internal constructor(
     private val owner: LifecycleOwner,
-    private val imageLoader: ImageLoader,
-    parent: ViewGroup,
-) :
-    BaseUiView<DetailViewState, SearchViewEvent.FilterEvent, SearchFilterBinding>(parent),
-    SnackbarContainer {
+    private val parent: ViewGroup,
+) : UiView<DetailViewState, SearchViewEvent.FilterEvent>() {
 
-  override val viewBinding = SearchFilterBinding::inflate
-
-  override val layoutRoot by boundView { searchFilterRoot }
-
-  private var filterIconLoaded: Loaded? = null
-
-  init {
-    doOnInflate {
-      binding.searchFilter.setOnDebouncedClickListener {
-        publish(SearchViewEvent.FilterEvent.ChangeCurrentFilter)
-      }
-    }
-
-    doOnTeardown { binding.searchFilter.setOnClickListener(null) }
-
-    doOnInflate { binding.searchFilter.show() }
-
-    doOnTeardown { clearFilter() }
-  }
-
-  private fun clearFilter() {
-    filterIconLoaded?.dispose()
-    filterIconLoaded = null
-  }
-
-  private fun handleShowing(showing: DetailViewState.Showing) {
-    clearFilter()
-
-    filterIconLoaded =
-        imageLoader
-            .asDrawable()
-            .load(
-                when (showing) {
-                  DetailViewState.Showing.FRESH -> R.drawable.ic_category_24
-                  DetailViewState.Showing.CONSUMED -> R.drawable.ic_consumed_24dp
-                  DetailViewState.Showing.SPOILED -> R.drawable.ic_spoiled_24dp
-                })
-            .into(binding.searchFilter)
-  }
-
-  override fun container(): CoordinatorLayout {
-    return layoutRoot
-  }
-
-  override fun onRender(state: UiRender<DetailViewState>) {
-    state.mapChanged { it.bottomOffset }.render(viewScope) { handleBottomMargin(it) }
+  override fun render(state: UiRender<DetailViewState>) {
     state.mapChanged { it.undoable }.render(viewScope) { handleUndo(it) }
-    state.mapChanged { it.showing }.render(viewScope) { handleShowing(it) }
-  }
-
-  private fun handleBottomMargin(height: Int) {
-    layoutRoot.updateLayoutParams<ViewGroup.MarginLayoutParams> { this.bottomMargin = height }
   }
 
   private fun handleUndo(undoable: DetailViewState.Undoable?) {
@@ -115,7 +54,7 @@ internal constructor(
 
     CustomSnackbar.Break.bindTo(owner) {
       long(
-          layoutRoot,
+          parent,
           message,
           onHidden = { _, _ -> publish(SearchViewEvent.FilterEvent.ReallyDeleteItemNoUndo) }) {
         // If we have consumed/spoiled this item

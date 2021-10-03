@@ -148,7 +148,6 @@ internal class DetailFragment : Fragment(), SnackbarContainer {
           return@createComponent when (it) {
             is DetailViewEvent.ButtonEvent.AddNew -> addViewModel.handleAddNew()
             is DetailViewEvent.ButtonEvent.AnotherOne -> addViewModel.handleAddAgain(it.item)
-            is DetailViewEvent.ButtonEvent.ChangeCurrentFilter -> addViewModel.handleUpdateShowing()
             is DetailViewEvent.ButtonEvent.ClearListError -> addViewModel.handleClearListError()
             is DetailViewEvent.ButtonEvent.ReallyDeleteItemNoUndo ->
                 addViewModel.handleDeleteForever()

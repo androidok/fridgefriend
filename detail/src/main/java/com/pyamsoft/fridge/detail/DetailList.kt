@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.swipe.SimpleSwipeCallback
 import com.pyamsoft.fridge.db.item.FridgeItem
-import com.pyamsoft.fridge.db.item.FridgeItem.Presence.HAVE
 import com.pyamsoft.fridge.db.item.FridgeItem.Presence.NEED
 import com.pyamsoft.fridge.detail.databinding.DetailListBinding
 import com.pyamsoft.fridge.detail.item.DetailItemComponent
@@ -214,9 +213,7 @@ internal constructor(
   }
 
   private fun setupSwipeCallback(state: DetailViewState) {
-    val isFresh = state.showing == DetailViewState.Showing.FRESH
-    val swipeAwayDeletes = isFresh && state.listItemPresence == NEED
-    val swipeAwayRestores = !isFresh && state.listItemPresence == HAVE
+    val swipeAwayDeletes = state.listItemPresence == NEED
 
     val consumeSwipeDirection = ItemTouchHelper.RIGHT
     val spoilSwipeDirection = ItemTouchHelper.LEFT
@@ -224,7 +221,6 @@ internal constructor(
 
     applySwipeCallback(
         swipeAwayDeletes,
-        swipeAwayRestores,
         directions,
     ) { position, direction ->
       val holder = binding.detailList.findViewHolderForAdapterPosition(position)
@@ -240,14 +236,6 @@ internal constructor(
       if (direction == consumeSwipeDirection || direction == spoilSwipeDirection) {
         if (swipeAwayDeletes) {
           deleteListItem(position)
-        } else if (swipeAwayRestores) {
-          if (direction == consumeSwipeDirection) {
-            // Restore from archive
-            restoreListItem(position)
-          } else {
-            // Delete forever
-            deleteListItem(position)
-          }
         } else {
           if (direction == consumeSwipeDirection) {
             consumeListItem(position)
@@ -301,7 +289,6 @@ internal constructor(
 
   private inline fun applySwipeCallback(
       swipeAwayDeletes: Boolean,
-      swipeAwayRestores: Boolean,
       directions: Int,
       crossinline itemSwipeCallback: (position: Int, directions: Int) -> Unit,
   ) {
@@ -312,7 +299,6 @@ internal constructor(
             .load(
                 when {
                   swipeAwayDeletes -> R4.drawable.ic_delete_24dp
-                  swipeAwayRestores -> R4.drawable.ic_delete_24dp
                   else -> R2.drawable.ic_spoiled_24dp
                 })
             .mutate { it.themeIcon() }
@@ -334,7 +320,6 @@ internal constructor(
             .load(
                 when {
                   swipeAwayDeletes -> R4.drawable.ic_delete_24dp
-                  swipeAwayRestores -> R.drawable.ic_restore_from_trash_24
                   else -> R2.drawable.ic_consumed_24dp
                 })
             .mutate { it.themeIcon() }
@@ -354,10 +339,6 @@ internal constructor(
   @CheckResult
   private fun usingAdapter(): DetailListAdapter {
     return modelAdapter.requireNotNull()
-  }
-
-  private fun restoreListItem(position: Int) {
-    publish(DetailViewEvent.ListEvent.RestoreItem(position))
   }
 
   private fun deleteListItem(position: Int) {

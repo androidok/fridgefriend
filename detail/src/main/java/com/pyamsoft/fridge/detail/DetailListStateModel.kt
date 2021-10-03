@@ -58,7 +58,6 @@ internal constructor(
                 entry = null,
                 search = "".asEditData(),
                 isLoading = false,
-                showing = DetailViewState.Showing.FRESH,
                 sort = UiToolbar.SortType.CREATED_TIME,
                 listError = null,
                 undoable = null,
@@ -307,8 +306,6 @@ internal constructor(
         stateChange = {
           copy(
               listItemPresence = presence,
-              // Reset the showing
-              showing = DetailViewState.Showing.FRESH,
               // Reset the sort
               sort = UiToolbar.SortType.CREATED_TIME,
           )
@@ -368,26 +365,6 @@ internal constructor(
     }
   }
 
-  fun handleToggleArchived(
-      scope: CoroutineScope,
-      andThen: suspend (DetailViewState.Showing) -> Unit
-  ) {
-    scope.setState(
-        stateChange = {
-          val newShowing =
-              when (showing) {
-                DetailViewState.Showing.FRESH -> DetailViewState.Showing.CONSUMED
-                DetailViewState.Showing.CONSUMED -> DetailViewState.Showing.SPOILED
-                DetailViewState.Showing.SPOILED -> DetailViewState.Showing.FRESH
-              }
-          copy(showing = newShowing)
-        },
-        andThen = { newState ->
-          handleRefreshList(this, false)
-          andThen(newState.showing)
-        })
-  }
-
   fun handleRefreshList(scope: CoroutineScope, force: Boolean) {
     scope.setState(
         stateChange = { copy(isLoading = true) },
@@ -424,10 +401,6 @@ internal constructor(
 
   fun handleClearListError(scope: CoroutineScope) {
     scope.handleError(null)
-  }
-
-  fun handleUpdateFilter(scope: CoroutineScope, showing: DetailViewState.Showing) {
-    scope.setState { copy(showing = showing) }
   }
 
   fun handleAddAgain(scope: CoroutineScope, oldItem: FridgeItem) {

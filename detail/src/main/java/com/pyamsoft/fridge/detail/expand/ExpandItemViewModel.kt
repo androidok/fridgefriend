@@ -41,7 +41,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import java.util.Calendar
-import java.util.Locale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -322,10 +321,10 @@ internal constructor(
                   similarItems =
                       items
                           // For now since we do not have the full similar item support
-                          .distinctBy { it.name().lowercase(Locale.getDefault()).trim() }
+                          .distinctBy { it.name().lowercase().trim() }
                           .map { item ->
                             ExpandedViewState.SimilarItem(
-                                item, item.name().lowercase(Locale.getDefault()))
+                                item, item.name().lowercase())
                           })
             }
           }

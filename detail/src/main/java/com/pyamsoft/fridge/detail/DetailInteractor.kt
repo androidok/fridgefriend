@@ -35,7 +35,6 @@ import com.pyamsoft.fridge.preference.SearchPreferences
 import com.pyamsoft.pydroid.core.Enforcer
 import com.pyamsoft.pydroid.core.ResultWrapper
 import com.pyamsoft.pydroid.util.PreferenceListener
-import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -133,7 +132,7 @@ internal constructor(
         return@withContext try {
           ResultWrapper.success(
               itemQueryDao.querySameNameDifferentPresence(
-                  false, item.name().trim().lowercase(Locale.getDefault()), item.presence()))
+                  false, item.name().trim().lowercase(), item.presence()))
         } catch (e: Throwable) {
           Timber.e(e, "Error finding same named items: $item")
           ResultWrapper.failure(e)
@@ -147,7 +146,7 @@ internal constructor(
         return@withContext try {
           ResultWrapper.success(
               itemQueryDao.querySimilarNamedItems(
-                  false, item.id(), item.name().trim().lowercase(Locale.getDefault())))
+                  false, item.id(), item.name().trim().lowercase()))
         } catch (e: Throwable) {
           Timber.e(e, "Error finding similar named items: $item")
           ResultWrapper.failure(e)

@@ -48,7 +48,6 @@ import com.pyamsoft.fridge.db.room.migrate.Migrate1To2
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import java.util.Locale
 import java.util.concurrent.TimeUnit.MINUTES
 import javax.inject.Qualifier
 
@@ -156,7 +155,7 @@ abstract class RoomModule {
             .asSequence()
             .map { JsonMappableFridgeItem.from(it.makeReal()) }
             .map { fridgeItem ->
-              val itemName = fridgeItem.name().lowercase(Locale.getDefault()).trim()
+              val itemName = fridgeItem.name().lowercase().trim()
 
               val score =
                   when {

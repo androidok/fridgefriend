@@ -112,6 +112,10 @@ protected constructor(
         }
 
     return PendingIntent.getActivity(
-        context, notificationId.id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        context,
+        notificationId.id,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+    )
   }
 }

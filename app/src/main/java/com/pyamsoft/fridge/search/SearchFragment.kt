@@ -48,21 +48,18 @@ internal class SearchFragment : Fragment() {
   @JvmField @Inject internal var filter: SearchFilter? = null
 
   @JvmField @Inject internal var listViewFactory: SearchListViewModel.Factory? = null
-  private val listViewModel by viewModels<SearchListViewModel> {
-    listViewFactory.requireNotNull().asFactory(this)
-  }
+  private val listViewModel by
+      viewModels<SearchListViewModel> { listViewFactory.requireNotNull().asFactory(this) }
 
   @JvmField @Inject internal var filterViewFactory: SearchFilterViewModel.Factory? = null
-  private val filterViewModel by viewModels<SearchFilterViewModel> {
-    filterViewFactory.requireNotNull().asFactory(this)
-  }
+  private val filterViewModel by
+      viewModels<SearchFilterViewModel> { filterViewFactory.requireNotNull().asFactory(this) }
 
   @JvmField @Inject internal var toolbar: SearchToolbar? = null
 
   @JvmField @Inject internal var toolbarFactory: SearchToolbarViewModel.Factory? = null
-  private val toolbarViewModel by viewModels<SearchToolbarViewModel> {
-    toolbarFactory.requireNotNull().asFactory(this)
-  }
+  private val toolbarViewModel by
+      viewModels<SearchToolbarViewModel> { toolbarFactory.requireNotNull().asFactory(this) }
 
   private var stateSaver: StateSaver? = null
 
